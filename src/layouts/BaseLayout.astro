@@ -1,0 +1,84 @@
+---
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import TelemetryFooter from '../components/TelemetryFooter.astro';
+import SEO from '../components/SEO.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalUrl?: string;
+  brandName?: string;
+  statusText?: string;
+  currentFocus?: string;
+  pageType?: 'website' | 'article' | 'profile';
+  ogImage?: string;
+  publishedTime?: string;
+  tags?: string[];
+}
+
+const {
+  title = "Systems Engineering Portfolio | Data, Software & AI",
+  description = "Personal portfolio of an Informatics graduate specializing in Data Engineering, Software Engineering, and AI/ML/NLP systems.",
+  canonicalUrl,
+  brandName = "sys.dev",
+  statusText = "Available for roles",
+  currentFocus = "Distributed data systems & LLM orchestration",
+  pageType = "website",
+  ogImage,
+  publishedTime,
+  tags,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#09090b" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- SEO & Metadata -->
+    <SEO
+      title={title}
+      description={description}
+      canonicalUrl={canonicalUrl}
+      pageType={pageType}
+      ogImage={ogImage}
+      publishedTime={publishedTime}
+      tags={tags}
+    />
+
+    <!-- Typography (Google Fonts with preconnect) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link font-mono">
+      Skip to main content
+    </a>
+
+    <SiteHeader brandName={brandName} statusText={statusText} />
+
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+
+    <TelemetryFooter currentFocus={currentFocus} />
+  </body>
+</html>
+
+<style>
+  #main-content {
+    min-height: 70vh;
+    outline: none;
+  }
+</style>

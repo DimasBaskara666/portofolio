@@ -1,0 +1,194 @@
+---
+import { competencies } from '../data/competencies';
+
+const pillarAccents: Record<string, string> = {
+  data: 'var(--text-accent)',
+  software: 'var(--accent-emerald)',
+  ai: 'var(--accent-amber)',
+};
+---
+
+<div class="technical-matrix">
+  <div class="matrix-grid">
+    {competencies.map((group) => {
+      const accentColor = pillarAccents[group.pillar] || 'var(--text-accent)';
+      return (
+        <article class="matrix-column" aria-labelledby={`pillar-${group.id}`}>
+          <header class="column-header">
+            <div class="pillar-tag font-mono text-xs" style={`color: ${accentColor};`}>
+              <span class="tag-prefix" aria-hidden="true">//</span>
+              <span>{group.pillar.toUpperCase()}</span>
+            </div>
+            <h3 id={`pillar-${group.id}`} class="pillar-title">
+              {group.title}
+            </h3>
+            <p class="pillar-description text-secondary text-xs">
+              {group.description}
+            </p>
+          </header>
+
+          <ul class="skills-list" aria-label={`${group.title} skills and context`}>
+            {group.skills.map((skill) => (
+              <li class="skill-item">
+                <div class="skill-name font-mono text-xs text-primary">
+                  {skill.name}
+                </div>
+                <p class="skill-context text-secondary text-xs">
+                  {skill.context}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </article>
+      );
+    })}
+  </div>
+
+  <div class="matrix-footer">
+    <div class="philosophy-badge font-mono text-xs">
+      <span class="philosophy-icon" aria-hidden="true">●</span>
+      <span>Engineering Standards</span>
+    </div>
+    <p class="philosophy-copy text-secondary text-xs">
+      Competencies reflect hands-on project work, research experiments, and academic implementations. Focus is placed on data integrity, clear module contracts, and empirical evaluation rather than unverified proficiency claims.
+    </p>
+  </div>
+</div>
+
+<style>
+  .technical-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .matrix-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+  }
+
+  .matrix-column {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .matrix-column:hover {
+    border-color: var(--border-active);
+    background-color: var(--bg-surface-hover);
+  }
+
+  .column-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-4);
+  }
+
+  .pillar-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    letter-spacing: 0.08em;
+  }
+
+  .tag-prefix {
+    opacity: 0.8;
+  }
+
+  .pillar-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .pillar-description {
+    line-height: 1.5;
+    margin-top: var(--space-1);
+  }
+
+  .skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    flex-grow: 1;
+  }
+
+  .skill-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-bottom: var(--space-3);
+    border-bottom: 1px dashed var(--border-subtle);
+  }
+
+  .skill-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .skill-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.35;
+  }
+
+  .skill-context {
+    line-height: 1.45;
+  }
+
+  .matrix-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .matrix-footer {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--space-6);
+    }
+  }
+
+  .philosophy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    padding-top: 0.1rem;
+  }
+
+  .philosophy-icon {
+    color: var(--accent-emerald);
+    font-size: 0.65rem;
+  }
+
+  .philosophy-copy {
+    line-height: 1.5;
+    margin: 0;
+  }
+</style>

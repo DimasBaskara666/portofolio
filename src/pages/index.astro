@@ -1,0 +1,132 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import DomainFilter from '../components/DomainFilter.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import TechnicalMatrix from '../components/TechnicalMatrix.astro';
+import EngineeringLogs from '../components/EngineeringLogs.astro';
+
+const allProjects = await getCollection('projects');
+
+const projects = allProjects.map((entry) => ({
+  id: entry.id,
+  title: entry.data.title,
+  domain: entry.data.domain,
+  year: entry.data.year,
+  summary: entry.data.summary,
+  technicalContext: entry.data.technicalContext,
+  metrics: entry.data.metrics,
+  technologies: entry.data.technologies,
+  githubUrl: entry.data.githubUrl,
+  liveUrl: entry.data.liveUrl,
+  architectureSteps: entry.data.architectureSteps,
+  featured: entry.data.featured,
+}));
+---
+
+<BaseLayout
+  title="Systems Engineering Portfolio | Data, Software & AI"
+  description="Personal portfolio of an Informatics graduate specializing in Data Engineering, Software Engineering, and AI/ML/NLP systems."
+  brandName="dimas // sys"
+  statusText="Available for roles"
+  currentFocus="Distributed data pipelines & LLM orchestration"
+  pageType="profile"
+>
+  <div class="container page-content">
+    <!-- Hero Section -->
+    <Hero
+      name="Dimas"
+      role="Informatics Graduate · Systems Focus"
+      bio="Informatics graduate specializing in data pipelines, backend architecture, and applied machine learning. Focused on high-throughput processing, clean data contracts, and verified system reliability."
+    />
+
+    <!-- Work Section Target -->
+    <section id="work" class="section-block" aria-labelledby="work-heading">
+      <div class="section-header">
+        <h2 id="work-heading" class="section-title font-mono">
+          <span class="section-index text-muted">01 //</span> Selected Systems & Architecture
+        </h2>
+        <span class="font-mono text-xs text-muted">Index / 0{projects.length}</span>
+      </div>
+
+      <DomainFilter activeDomain="all" />
+
+      <div class="projects-grid" id="projects-grid">
+        {projects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Competencies Section Target -->
+    <section id="competencies" class="section-block" aria-labelledby="competencies-heading">
+      <div class="section-header">
+        <h2 id="competencies-heading" class="section-title font-mono">
+          <span class="section-index text-muted">02 //</span> Technical Competency Matrix
+        </h2>
+        <span class="font-mono text-xs text-muted">Core Domains & Context</span>
+      </div>
+      <TechnicalMatrix />
+    </section>
+
+    <!-- Logs Section Target -->
+    <section id="logs" class="section-block" aria-labelledby="logs-heading">
+      <div class="section-header">
+        <h2 id="logs-heading" class="section-title font-mono">
+          <span class="section-index text-muted">03 //</span> Engineering Logs & Case Studies
+        </h2>
+        <span class="font-mono text-xs text-muted">Technical Writeups</span>
+      </div>
+      <EngineeringLogs />
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-content {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+
+  .section-block {
+    scroll-margin-top: 5rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-4);
+  }
+
+  .section-title {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .section-index {
+    margin-right: var(--space-1);
+  }
+
+  .placeholder-card {
+    background: var(--bg-surface);
+    border: 1px dashed var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-6);
+  }
+
+  .projects-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+</style>

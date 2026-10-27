@@ -1,0 +1,302 @@
+---
+interface Props {
+  name?: string;
+  role?: string;
+  bio?: string;
+  cvPath?: string;
+}
+
+const {
+  name = "Dimas",
+  role = "Informatics Graduate · Systems Engineer",
+  bio = "Informatics graduate focused on building reproducible data pipelines, high-throughput backend services, and verified machine learning workflows. Emphasizes clean architecture, data contracts, and automated validation over boilerplate.",
+  cvPath,
+} = Astro.props;
+---
+
+<section class="hero-section" aria-labelledby="hero-title">
+  <div class="hero-badge font-mono">
+    <span class="badge-dot" aria-hidden="true"></span>
+    <span>{role}</span>
+  </div>
+
+  <h1 id="hero-title" class="hero-heading">
+    <span class="hero-name">{name}</span>
+    <span class="hero-subline text-secondary">Data, Backend & Applied ML Engineer</span>
+  </h1>
+
+  <ul class="focus-pillars font-mono" aria-label="Core Engineering Pillars">
+    <li class="pillar-tag">
+      <span class="pillar-prefix" aria-hidden="true">//</span>
+      <span>Data Engineering</span>
+    </li>
+    <li class="pillar-tag">
+      <span class="pillar-prefix" aria-hidden="true">//</span>
+      <span>Software Engineering</span>
+    </li>
+    <li class="pillar-tag">
+      <span class="pillar-prefix" aria-hidden="true">//</span>
+      <span>AI / ML Systems</span>
+    </li>
+  </ul>
+
+  <p class="hero-bio text-secondary">
+    {bio}
+  </p>
+
+  <div class="hero-actions">
+    <a
+      href="#work"
+      class="hero-btn hero-btn-primary font-mono"
+      aria-label="Navigate to selected systems and project case studies"
+    >
+      <span data-unscramble>Explore Systems</span>
+      <span class="btn-glyph" aria-hidden="true">→</span>
+    </a>
+
+    {cvPath ? (
+      <a
+        href={cvPath}
+        download="resume.pdf"
+        class="hero-btn hero-btn-secondary font-mono"
+        aria-label="Download Curriculum Vitae as PDF"
+      >
+        <span data-unscramble>Download CV</span>
+        <span class="btn-glyph" aria-hidden="true">↓</span>
+      </a>
+    ) : (
+      <button
+        type="button"
+        class="hero-btn hero-btn-disabled font-mono"
+        aria-label="Curriculum Vitae file pending upload"
+        disabled
+        title="Resume PDF pending upload by owner"
+      >
+        <span>Download CV (Pending)</span>
+        <span class="btn-glyph" aria-hidden="true">↓</span>
+      </button>
+    )}
+  </div>
+</section>
+
+<script>
+  function setupUnscramble(): void {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const glyphs = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789//_';
+    const targets = document.querySelectorAll<HTMLElement>('[data-unscramble]');
+
+    targets.forEach((element) => {
+      const originalText = element.getAttribute('data-original') || element.textContent || '';
+      element.setAttribute('data-original', originalText);
+
+      let timer: number | null = null;
+
+      const triggerUnscramble = (): void => {
+        let step = 0;
+        const total = originalText.length;
+        if (timer !== null) {
+          window.clearInterval(timer);
+        }
+
+        timer = window.setInterval(() => {
+          element.textContent = originalText
+            .split('')
+            .map((char, index) => {
+              if (index < step) {
+                return originalText[index];
+              }
+              if (char === ' ') return ' ';
+              const randIndex = Math.floor(Math.random() * glyphs.length);
+              return glyphs[randIndex];
+            })
+            .join('');
+
+          step += 2;
+          if (step >= total + 2) {
+            if (timer !== null) {
+              window.clearInterval(timer);
+              timer = null;
+            }
+            element.textContent = originalText;
+          }
+        }, 15);
+      };
+
+      element.addEventListener('mouseenter', triggerUnscramble);
+      element.addEventListener('focus', triggerUnscramble);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupUnscramble);
+  } else {
+    setupUnscramble();
+  }
+</script>
+
+<style>
+  .hero-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent-emerald);
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+  }
+
+  .hero-heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+  }
+
+  .hero-name {
+    font-size: var(--text-3xl);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+
+  .hero-subline {
+    font-size: var(--text-lg);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  @media (min-width: 640px) {
+    .hero-name {
+      font-size: 2.5rem;
+    }
+
+    .hero-subline {
+      font-size: var(--text-xl);
+    }
+  }
+
+  .focus-pillars {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+  }
+
+  .pillar-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0.25rem 0.65rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .pillar-tag:hover {
+    border-color: var(--border-active);
+    color: var(--text-primary);
+  }
+
+  .pillar-prefix {
+    color: var(--text-accent);
+  }
+
+  .hero-bio {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    max-width: 42rem;
+    margin-top: var(--space-1);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+
+  .hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.55rem 1rem;
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .hero-btn:active {
+    transform: translateY(1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-btn:active {
+      transform: none !important;
+    }
+  }
+
+  .hero-btn-primary {
+    background-color: var(--text-primary);
+    color: var(--bg-canvas);
+    border: 1px solid var(--text-primary);
+    font-weight: 500;
+  }
+
+  .hero-btn-primary:hover {
+    background-color: #ffffff;
+    border-color: #ffffff;
+  }
+
+  .hero-btn-secondary {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .hero-btn-secondary:hover {
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-active);
+  }
+
+  .hero-btn-disabled {
+    background-color: var(--bg-surface);
+    color: var(--text-muted);
+    border: 1px dashed var(--border-subtle);
+    cursor: not-allowed;
+  }
+
+  .btn-glyph {
+    color: inherit;
+    font-weight: 600;
+  }
+</style>

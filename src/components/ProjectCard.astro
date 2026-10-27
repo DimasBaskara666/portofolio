@@ -1,0 +1,289 @@
+---
+import type { ProjectItem } from '../types';
+import ArchitectureDiagram from './ArchitectureDiagram.astro';
+
+interface Props {
+  project: ProjectItem;
+}
+
+const { project } = Astro.props;
+
+const domainLabels: Record<string, string> = {
+  data: 'Data Engineering',
+  software: 'Software Engineering',
+  ai: 'AI / ML / NLP',
+};
+
+const domainAccents: Record<string, string> = {
+  data: 'var(--text-accent)',
+  software: 'var(--accent-emerald)',
+  ai: 'var(--accent-amber)',
+};
+
+const accent = domainAccents[project.domain] || 'var(--text-accent)';
+const domainName = domainLabels[project.domain] || project.domain;
+---
+
+<article class="project-card" data-domain={project.domain} aria-labelledby={`proj-title-${project.id}`}>
+  <header class="project-header">
+    <div class="project-meta">
+      <span class="domain-badge font-mono text-xs" style={`color: ${accent}; border-color: ${accent};`}>
+        {domainName}
+      </span>
+      {project.technicalContext && (
+        <span class="context-tag font-mono text-xs text-muted">
+          {project.technicalContext}
+        </span>
+      )}
+      <span class="year-tag font-mono text-xs text-muted">
+        {project.year}
+      </span>
+    </div>
+
+    <h3 id={`proj-title-${project.id}`} class="project-title">
+      {project.title}
+    </h3>
+  </header>
+
+  <p class="project-summary text-secondary text-sm">
+    {project.summary}
+  </p>
+
+  {project.metrics && project.metrics.length > 0 && (
+    <div class="metrics-grid" aria-label="System Metrics and Evaluation">
+      {project.metrics.map((metric) => (
+        <div class="metric-item">
+          <span class="metric-label font-mono text-xs text-muted">{metric.label}</span>
+          <span class="metric-value font-mono text-xs text-primary">{metric.value}</span>
+        </div>
+      ))}
+    </div>
+  )}
+
+  <div class="tech-stack" aria-label="Technologies Used">
+    {project.technologies.map((tech) => (
+      <span class="tech-chip font-mono text-xs">{tech}</span>
+    ))}
+  </div>
+
+  {project.architectureSteps && project.architectureSteps.length > 0 && (
+    <details class="topology-accordion">
+      <summary class="topology-toggle font-mono text-xs">
+        <span class="toggle-icon font-mono" aria-hidden="true"></span>
+        <span>View System Architecture & Data Flow</span>
+        <span class="sr-only"> for {project.title}</span>
+      </summary>
+      <div class="topology-body">
+        <ArchitectureDiagram steps={project.architectureSteps} projectName={project.title} />
+      </div>
+    </details>
+  )}
+
+  <footer class="project-footer">
+    <div class="project-links">
+      {project.githubUrl ? (
+        <a
+          href={project.githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="project-link font-mono text-xs"
+          aria-label={`View code repository for ${project.title}`}
+        >
+          <span>Repository</span>
+          <span class="link-glyph" aria-hidden="true">↗</span>
+        </a>
+      ) : (
+        <span class="project-link-disabled font-mono text-xs text-muted">
+          Academic Research Work
+        </span>
+      )}
+
+      {project.liveUrl && (
+        <a
+          href={project.liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="project-link font-mono text-xs"
+          aria-label={`View demonstration for ${project.title}`}
+        >
+          <span>Demo</span>
+          <span class="link-glyph" aria-hidden="true">↗</span>
+        </a>
+      )}
+    </div>
+  </footer>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .project-card:hover {
+    border-color: var(--border-active);
+  }
+
+  .project-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .domain-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid;
+    border-radius: var(--radius-sm);
+    background-color: rgba(255, 255, 255, 0.02);
+    letter-spacing: 0.04em;
+  }
+
+  .context-tag {
+    letter-spacing: 0.02em;
+  }
+
+  .year-tag {
+    margin-left: auto;
+  }
+
+  .project-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .project-summary {
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background-color: var(--bg-canvas);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .metric-label {
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+  }
+
+  .metric-value {
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tech-chip {
+    padding: 0.2rem 0.5rem;
+    background-color: var(--bg-surface-hover);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+  }
+
+  .topology-accordion {
+    border-top: 1px dashed var(--border-subtle);
+    padding-top: var(--space-3);
+  }
+
+  .topology-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-accent);
+    cursor: pointer;
+    user-select: none;
+    padding: var(--space-1) var(--space-2);
+    margin-left: calc(-1 * var(--space-2));
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast);
+  }
+
+  .topology-toggle:hover {
+    color: var(--text-primary);
+  }
+
+  .topology-toggle:focus-visible {
+    outline: 2px solid var(--text-accent);
+    outline-offset: 2px;
+  }
+
+  .toggle-icon::before {
+    content: "[+]";
+  }
+
+  .topology-accordion[open] .toggle-icon::before {
+    content: "[-]";
+  }
+
+  .topology-body {
+    margin-top: var(--space-2);
+  }
+
+  .project-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-subtle);
+    margin-top: auto;
+  }
+
+  .project-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition-fast);
+  }
+
+  .project-link:hover {
+    color: var(--text-accent);
+  }
+
+  .link-glyph {
+    text-decoration: none;
+  }
+</style>

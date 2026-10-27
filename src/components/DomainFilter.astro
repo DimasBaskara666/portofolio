@@ -1,0 +1,154 @@
+---
+interface Props {
+  activeDomain?: string;
+}
+
+const { activeDomain = "all" } = Astro.props;
+
+const filters = [
+  { id: 'all', label: 'All Systems' },
+  { id: 'data', label: 'Data Systems' },
+  { id: 'software', label: 'Software Engineering' },
+  { id: 'ai', label: 'AI / ML / NLP' },
+];
+---
+
+<div class="domain-filter-bar" role="tablist" aria-label="Filter projects by domain">
+  <div class="filter-tabs">
+    {filters.map((f) => {
+      const isSelected = f.id === activeDomain;
+      return (
+        <button
+          type="button"
+          role="tab"
+          id={`tab-${f.id}`}
+          class={`filter-tab font-mono text-xs ${isSelected ? 'active' : ''}`}
+          aria-selected={isSelected ? 'true' : 'false'}
+          aria-controls="projects-grid"
+          tabindex={isSelected ? 0 : -1}
+          data-filter={f.id}
+          data-label={f.label}
+        >
+          <span class="tab-glyph" aria-hidden="true">/</span>
+          <span>{f.label}</span>
+        </button>
+      );
+    })}
+  </div>
+  <div id="domain-filter-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+</div>
+
+<script>
+  function setupDomainFilter(): void {
+    const filterButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.filter-tab'));
+    const projectCards = Array.from(document.querySelectorAll<HTMLElement>('.project-card'));
+    const statusRegion = document.getElementById('domain-filter-status');
+
+    if (!filterButtons.length || !projectCards.length) return;
+
+    function applyFilter(selectedButton: HTMLButtonElement): void {
+      const selectedFilter = selectedButton.getAttribute('data-filter') || 'all';
+      const label = selectedButton.getAttribute('data-label') || 'All Systems';
+
+      filterButtons.forEach((btn) => {
+        const isActive = btn === selectedButton;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        btn.setAttribute('tabindex', isActive ? '0' : '-1');
+      });
+
+      let visibleCount = 0;
+      projectCards.forEach((card) => {
+        const cardDomain = card.getAttribute('data-domain');
+        if (selectedFilter === 'all' || cardDomain === selectedFilter) {
+          card.hidden = false;
+          visibleCount += 1;
+        } else {
+          card.hidden = true;
+        }
+      });
+
+      if (statusRegion) {
+        statusRegion.textContent = `Showing ${visibleCount} of ${projectCards.length} projects for ${label}`;
+      }
+    }
+
+    filterButtons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        applyFilter(button);
+      });
+
+      button.addEventListener('keydown', (event) => {
+        let targetIndex: number | null = null;
+
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+          event.preventDefault();
+          targetIndex = (index + 1) % filterButtons.length;
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          targetIndex = (index - 1 + filterButtons.length) % filterButtons.length;
+        } else if (event.key === 'Home') {
+          event.preventDefault();
+          targetIndex = 0;
+        } else if (event.key === 'End') {
+          event.preventDefault();
+          targetIndex = filterButtons.length - 1;
+        }
+
+        if (targetIndex !== null) {
+          const targetButton = filterButtons[targetIndex];
+          targetButton.focus();
+          applyFilter(targetButton);
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupDomainFilter);
+  } else {
+    setupDomainFilter();
+  }
+</script>
+
+<style>
+  .domain-filter-bar {
+    width: 100%;
+    margin-bottom: var(--space-4);
+  }
+
+  .filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .filter-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0.35rem 0.75rem;
+    background-color: var(--bg-surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .filter-tab:hover {
+    color: var(--text-primary);
+    border-color: var(--border-active);
+  }
+
+  .filter-tab.active {
+    color: var(--text-primary);
+    background-color: var(--bg-subtle);
+    border-color: var(--border-accent);
+  }
+
+  .tab-glyph {
+    color: var(--text-accent);
+  }
+</style>

@@ -1,0 +1,411 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const logs = await getCollection('logs');
+  return logs.map((log) => ({
+    params: { slug: log.id },
+    props: { log },
+  }));
+}
+
+const { log } = Astro.props;
+const { Content } = await render(log);
+---
+
+<BaseLayout
+  title={`${log.data.title} | Engineering Logs`}
+  description={log.data.description}
+  statusText="Reading Technical Log"
+  pageType="article"
+  publishedTime={log.data.publishDate}
+  tags={log.data.tags}
+>
+  <div class="container log-article-page">
+    <nav class="breadcrumb font-mono text-xs" aria-label="Breadcrumb">
+      <a href="/#logs" class="back-link">
+        <span class="back-glyph" aria-hidden="true">←</span>
+        <span>Back to Engineering Logs</span>
+      </a>
+    </nav>
+
+    <article class="article-container" aria-labelledby="article-title">
+      <header class="article-header">
+        <div class="article-meta font-mono text-xs">
+          <span class="meta-category text-accent">
+            <span class="glyph" aria-hidden="true">//</span>
+            {log.data.category}
+          </span>
+          <span class="meta-delimiter text-muted" aria-hidden="true">·</span>
+          <time datetime={log.data.publishDate} class="meta-date text-muted">
+            {log.data.publishDate}
+          </time>
+          {log.data.readTime && (
+            <>
+              <span class="meta-delimiter text-muted" aria-hidden="true">·</span>
+              <span class="meta-readtime text-muted">{log.data.readTime}</span>
+            </>
+          )}
+        </div>
+
+        <h1 id="article-title" class="article-heading">
+          {log.data.title}
+        </h1>
+
+        <p class="article-lead text-secondary">
+          {log.data.description}
+        </p>
+
+        <div class="article-tags" aria-label="Tags">
+          {log.data.tags.map((tag) => (
+            <span class="tag-chip font-mono text-xs">{tag}</span>
+          ))}
+        </div>
+      </header>
+
+      <div class="article-body">
+        <Content />
+      </div>
+
+      <footer class="article-footer">
+        <div class="footer-meta font-mono text-xs text-muted">
+          <span>Author: Dimas</span>
+          <span>·</span>
+          <span>Informatics Engineering Log</span>
+        </div>
+        <a href="/#logs" class="footer-back-link font-mono text-xs text-accent">
+          <span>← Back to all logs</span>
+        </a>
+      </footer>
+    </article>
+  </div>
+</BaseLayout>
+
+<script>
+  function setupCodeCopy(): void {
+    const codeBlocks = document.querySelectorAll<HTMLPreElement>('pre');
+
+    codeBlocks.forEach((pre) => {
+      if (pre.parentElement?.classList.contains('code-block-wrapper')) return;
+
+      pre.setAttribute('tabindex', '0');
+      pre.setAttribute('aria-label', 'Code block snippet');
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-block-wrapper';
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'code-copy-btn font-mono text-xs';
+      copyBtn.setAttribute('aria-label', 'Copy code snippet to clipboard');
+      copyBtn.setAttribute('aria-live', 'polite');
+      copyBtn.textContent = 'Copy';
+
+      copyBtn.addEventListener('click', async () => {
+        const codeEl = pre.querySelector('code');
+        const codeText = (codeEl ? codeEl.innerText : pre.innerText).trim();
+
+        const setCopied = () => {
+          copyBtn.textContent = 'Copied!';
+          copyBtn.setAttribute('aria-label', 'Code snippet copied to clipboard');
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.textContent = 'Copy';
+            copyBtn.setAttribute('aria-label', 'Copy code snippet to clipboard');
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        };
+
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(codeText);
+            setCopied();
+            return;
+          }
+          throw new Error('Clipboard API unavailable');
+        } catch {
+          try {
+            const textarea = document.createElement('textarea');
+            textarea.value = codeText;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            const doc = document as unknown as { execCommand?(cmd: string): boolean };
+            const successful = typeof doc.execCommand === 'function' ? doc.execCommand('copy') : false;
+            document.body.removeChild(textarea);
+            if (successful) {
+              setCopied();
+            } else {
+              copyBtn.textContent = 'Failed';
+              setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+            }
+          } catch {
+            copyBtn.textContent = 'Failed';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+          }
+        }
+      });
+
+      wrapper.appendChild(copyBtn);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupCodeCopy);
+  } else {
+    setupCodeCopy();
+  }
+</script>
+
+<style>
+  .log-article-page {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-16);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .breadcrumb {
+    padding-bottom: var(--space-2);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
+  }
+
+  .back-link:hover {
+    color: var(--text-primary);
+  }
+
+  .back-glyph {
+    color: var(--text-accent);
+  }
+
+  .article-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    max-width: 44rem;
+  }
+
+  .article-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    letter-spacing: 0.04em;
+  }
+
+  .article-heading {
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  @media (min-width: 640px) {
+    .article-heading {
+      font-size: 2.25rem;
+    }
+  }
+
+  .article-lead {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+  }
+
+  .tag-chip {
+    padding: 0.15rem 0.45rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+  }
+
+  /* Article prose typography */
+  .article-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    line-height: 1.7;
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+  }
+
+  .article-body :global(h2),
+  .article-body :global(h3),
+  .article-body :global(h4) {
+    color: var(--text-primary);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-1);
+    line-height: 1.35;
+  }
+
+  .article-body :global(h3) {
+    font-size: var(--text-lg);
+  }
+
+  .article-body :global(h4) {
+    font-size: var(--text-base);
+  }
+
+  .article-body :global(p) {
+    margin: 0;
+  }
+
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-left: var(--space-5);
+  }
+
+  .article-body :global(ul) {
+    list-style-type: disc;
+  }
+
+  .article-body :global(ol) {
+    list-style-type: decimal;
+  }
+
+  .article-body :global(li) {
+    line-height: 1.6;
+  }
+
+  .article-body :global(strong) {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .article-body :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+    margin: var(--space-6) 0;
+  }
+
+  .article-body :global(blockquote) {
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--text-accent);
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .article-body :global(code:not(pre code)) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    padding: 0.15rem 0.35rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-accent);
+  }
+
+  /* Code block styling and copy button wrapper */
+  :global(.code-block-wrapper) {
+    position: relative;
+    margin: var(--space-4) 0;
+  }
+
+  :global(.code-block-wrapper pre) {
+    padding: var(--space-4);
+    padding-top: var(--space-8);
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+  }
+
+  :global(.code-block-wrapper pre:focus-visible) {
+    outline: 2px solid var(--text-accent);
+    outline-offset: 2px;
+  }
+
+  :global(.code-copy-btn) {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    padding: 0.2rem 0.5rem;
+    background-color: var(--bg-canvas);
+    color: var(--text-muted);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+    z-index: 2;
+  }
+
+  :global(.code-copy-btn:hover) {
+    color: var(--text-primary);
+    border-color: var(--border-active);
+  }
+
+  :global(.code-copy-btn:focus-visible) {
+    outline: 2px solid var(--text-accent);
+    outline-offset: 2px;
+  }
+
+  :global(.code-copy-btn.copied) {
+    color: var(--accent-emerald);
+    border-color: var(--accent-emerald);
+  }
+
+  .article-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-subtle);
+    margin-top: var(--space-6);
+  }
+
+  .footer-meta {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .footer-back-link {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-back-link:hover {
+    color: var(--text-primary);
+  }
+</style>
