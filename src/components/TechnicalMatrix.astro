@@ -30,7 +30,7 @@ const pillarAccents: Record<string, string> = {
           <ul class="skills-list" aria-label={`${group.title} skills and context`}>
             {group.skills.map((skill) => (
               <li class="skill-item">
-                <div class="skill-name font-mono text-xs text-primary">
+                <div class="skill-name font-mono text-sm text-primary">
                   {skill.name}
                 </div>
                 <p class="skill-context text-secondary text-xs">
@@ -81,7 +81,7 @@ const pillarAccents: Record<string, string> = {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    padding: var(--space-5);
+    padding: var(--space-6);
     transition: border-color var(--transition-fast), background-color var(--transition-fast);
   }
 
@@ -126,15 +126,15 @@ const pillarAccents: Record<string, string> = {
   .skills-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-4);
     flex-grow: 1;
   }
 
   .skill-item {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
-    padding-bottom: var(--space-3);
+    gap: var(--space-1);
+    padding-bottom: var(--space-4);
     border-bottom: 1px dashed var(--border-subtle);
   }
 
@@ -144,6 +144,7 @@ const pillarAccents: Record<string, string> = {
   }
 
   .skill-name {
+    font-size: var(--text-sm);
     font-weight: 500;
     color: var(--text-primary);
     line-height: 1.35;
