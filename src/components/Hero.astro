@@ -54,7 +54,7 @@ const {
       <span class="btn-glyph" aria-hidden="true">→</span>
     </a>
 
-    {cvPath ? (
+    {cvPath && (
       <a
         href={cvPath}
         download="resume.pdf"
@@ -64,17 +64,6 @@ const {
         <span data-unscramble>Download CV</span>
         <span class="btn-glyph" aria-hidden="true">↓</span>
       </a>
-    ) : (
-      <button
-        type="button"
-        class="hero-btn hero-btn-disabled font-mono"
-        aria-label="Curriculum Vitae file pending upload"
-        disabled
-        title="Resume PDF pending upload by owner"
-      >
-        <span>Download CV (Pending)</span>
-        <span class="btn-glyph" aria-hidden="true">↓</span>
-      </button>
     )}
   </div>
 </section>
@@ -141,10 +130,17 @@ const {
   .hero-section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    padding-top: var(--space-6);
-    padding-bottom: var(--space-6);
+    gap: var(--space-5);
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
     border-bottom: 1px solid var(--border-subtle);
+  }
+
+  @media (min-width: 640px) {
+    .hero-section {
+      padding-top: var(--space-12);
+      padding-bottom: var(--space-12);
+    }
   }
 
   .hero-badge {
@@ -168,12 +164,12 @@ const {
   .hero-heading {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: var(--space-2);
     margin: 0;
   }
 
   .hero-name {
-    font-size: var(--text-3xl);
+    font-size: 2.25rem;
     font-weight: 600;
     letter-spacing: -0.03em;
     color: var(--text-primary);
@@ -184,12 +180,12 @@ const {
     font-size: var(--text-lg);
     font-weight: 400;
     letter-spacing: -0.01em;
-    line-height: 1.3;
+    line-height: 1.35;
   }
 
   @media (min-width: 640px) {
     .hero-name {
-      font-size: 2.5rem;
+      font-size: 2.875rem;
     }
 
     .hero-subline {
@@ -209,7 +205,7 @@ const {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    padding: 0.25rem 0.65rem;
+    padding: 0.3rem 0.75rem;
     background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
@@ -230,7 +226,7 @@ const {
 
   .hero-bio {
     font-size: var(--text-base);
-    line-height: 1.6;
+    line-height: 1.65;
     max-width: 42rem;
     margin-top: var(--space-1);
   }
@@ -243,11 +239,17 @@ const {
     margin-top: var(--space-3);
   }
 
+  @media (min-width: 640px) {
+    .hero-actions {
+      margin-top: var(--space-4);
+    }
+  }
+
   .hero-btn {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 0.55rem 1rem;
+    padding: 0.65rem 1.25rem;
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -286,13 +288,6 @@ const {
   .hero-btn-secondary:hover {
     background-color: var(--bg-surface-hover);
     border-color: var(--border-active);
-  }
-
-  .hero-btn-disabled {
-    background-color: var(--bg-surface);
-    color: var(--text-muted);
-    border: 1px dashed var(--border-subtle);
-    cursor: not-allowed;
   }
 
   .btn-glyph {
