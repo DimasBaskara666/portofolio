@@ -3,6 +3,7 @@ import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import TelemetryFooter from '../components/TelemetryFooter.astro';
 import SEO from '../components/SEO.astro';
+import { profile } from '../data/profile';
 
 interface Props {
   title?: string;
@@ -12,6 +13,7 @@ interface Props {
   statusText?: string;
   githubUrl?: string;
   linkedinUrl?: string;
+  emailAddress?: string;
   currentFocus?: string;
   pageType?: 'website' | 'article' | 'profile';
   ogImage?: string;
@@ -25,8 +27,9 @@ const {
   canonicalUrl,
   brandName = "sys.dev",
   statusText = "Available for roles",
-  githubUrl,
-  linkedinUrl,
+  githubUrl = profile.githubUrl,
+  linkedinUrl = profile.linkedinUrl,
+  emailAddress = profile.email,
   currentFocus = "Distributed data systems & LLM orchestration",
   pageType = "website",
   ogImage,
@@ -57,13 +60,7 @@ const {
       tags={tags}
     />
 
-    <!-- Typography (Google Fonts with preconnect) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+
   </head>
   <body>
     <a href="#main-content" class="skip-link font-mono">
@@ -81,7 +78,7 @@ const {
       <slot />
     </main>
 
-    <TelemetryFooter currentFocus={currentFocus} />
+    <TelemetryFooter currentFocus={currentFocus} emailAddress={emailAddress} />
   </body>
 </html>
 

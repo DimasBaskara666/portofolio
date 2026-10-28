@@ -1,4 +1,6 @@
 ---
+import { profile } from '../data/profile';
+
 interface Props {
   brandName?: string;
   statusText?: string;
@@ -9,8 +11,8 @@ interface Props {
 const {
   brandName = "sys.dev",
   statusText = "Available for roles",
-  githubUrl,
-  linkedinUrl,
+  githubUrl = profile.githubUrl,
+  linkedinUrl = profile.linkedinUrl,
 } = Astro.props;
 
 function isPlaceholderOrEmpty(url: string | undefined, platform: 'github' | 'linkedin'): boolean {

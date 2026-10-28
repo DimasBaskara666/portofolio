@@ -11,6 +11,7 @@ const projects = defineCollection({
       year: z.string(),
       summary: z.string(),
       technicalContext: z.string().optional(),
+      status: z.enum(['completed', 'in-progress', 'planned']).optional(),
       metrics: z
         .array(
           z.object({

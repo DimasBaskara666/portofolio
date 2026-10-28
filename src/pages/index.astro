@@ -6,6 +6,7 @@ import DomainFilter from '../components/DomainFilter.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import TechnicalMatrix from '../components/TechnicalMatrix.astro';
 import EngineeringLogs from '../components/EngineeringLogs.astro';
+import { profile } from '../data/profile';
 
 const allProjects = await getCollection('projects');
 
@@ -16,6 +17,7 @@ const projects = allProjects.map((entry) => ({
   year: entry.data.year,
   summary: entry.data.summary,
   technicalContext: entry.data.technicalContext,
+  status: entry.data.status,
   metrics: entry.data.metrics,
   technologies: entry.data.technologies,
   githubUrl: entry.data.githubUrl,
@@ -30,15 +32,19 @@ const projects = allProjects.map((entry) => ({
   description="Personal portfolio of an Informatics graduate specializing in Data Engineering, Software Engineering, and AI/ML/NLP systems."
   brandName="dimas // sys"
   statusText="Available for roles"
+  githubUrl={profile.githubUrl}
+  linkedinUrl={profile.linkedinUrl}
+  emailAddress={profile.email}
   currentFocus="Distributed data pipelines & LLM orchestration"
   pageType="profile"
 >
   <div class="container page-content">
     <!-- Hero Section -->
     <Hero
-      name="Dimas"
-      role="Informatics Graduate · Systems Focus"
+      name={profile.name}
+      role={profile.role}
       bio="Informatics graduate specializing in data pipelines, backend architecture, and applied machine learning. Focused on high-throughput processing, clean data contracts, and verified system reliability."
+      cvUrl={profile.cvUrl}
     />
 
     <!-- Work Section Target -->

@@ -1,9 +1,12 @@
 ---
+import { profile } from '../data/profile';
+
 interface Props {
   name?: string;
   role?: string;
   bio?: string;
   cvPath?: string;
+  cvUrl?: string;
 }
 
 const {
@@ -11,7 +14,11 @@ const {
   role = "Informatics Graduate · Systems Engineer",
   bio = "Informatics graduate focused on building reproducible data pipelines, high-throughput backend services, and verified machine learning workflows. Emphasizes clean architecture, data contracts, and automated validation over boilerplate.",
   cvPath,
+  cvUrl = profile.cvUrl,
 } = Astro.props;
+
+const targetCv = cvUrl || cvPath;
+const isExternalCv = Boolean(targetCv && /^https?:\/\//i.test(targetCv));
 ---
 
 <section class="hero-section" aria-labelledby="hero-title">
@@ -54,16 +61,29 @@ const {
       <span class="btn-glyph" aria-hidden="true">→</span>
     </a>
 
-    {cvPath && (
-      <a
-        href={cvPath}
-        download="resume.pdf"
-        class="hero-btn hero-btn-secondary font-mono"
-        aria-label="Download Curriculum Vitae as PDF"
-      >
-        <span data-unscramble>Download CV</span>
-        <span class="btn-glyph" aria-hidden="true">↓</span>
-      </a>
+    {targetCv && (
+      isExternalCv ? (
+        <a
+          href={targetCv}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hero-btn hero-btn-secondary font-mono"
+          aria-label="View Curriculum Vitae (opens in a new tab)"
+        >
+          <span data-unscramble>View CV</span>
+          <span class="btn-glyph" aria-hidden="true">↗</span>
+        </a>
+      ) : (
+        <a
+          href={targetCv}
+          download="resume.pdf"
+          class="hero-btn hero-btn-secondary font-mono"
+          aria-label="Download Curriculum Vitae as PDF"
+        >
+          <span data-unscramble>Download CV</span>
+          <span class="btn-glyph" aria-hidden="true">↓</span>
+        </a>
+      )
     )}
   </div>
 </section>
@@ -259,6 +279,11 @@ const {
 
   .hero-btn:active {
     transform: translateY(1px);
+  }
+
+  .hero-btn:focus-visible {
+    outline: 2px solid var(--text-accent);
+    outline-offset: 2px;
   }
 
   @media (prefers-reduced-motion: reduce) {

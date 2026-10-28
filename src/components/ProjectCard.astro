@@ -35,6 +35,11 @@ const domainName = domainLabels[project.domain] || project.domain;
           {project.technicalContext}
         </span>
       )}
+      {project.status === 'planned' && (
+        <span class="status-tag font-mono text-xs">
+          Planned
+        </span>
+      )}
       <span class="year-tag font-mono text-xs text-muted">
         {project.year}
       </span>
@@ -92,6 +97,10 @@ const domainName = domainLabels[project.domain] || project.domain;
           <span>Repository</span>
           <span class="link-glyph" aria-hidden="true">↗</span>
         </a>
+      ) : project.status === 'planned' ? (
+        <span class="project-link-disabled font-mono text-xs text-muted">
+          Development Planned
+        </span>
       ) : (
         <span class="project-link-disabled font-mono text-xs text-muted">
           Academic Research Work
@@ -154,6 +163,16 @@ const domainName = domainLabels[project.domain] || project.domain;
 
   .context-tag {
     letter-spacing: 0.02em;
+  }
+
+  .status-tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border: 1px dashed var(--accent-amber);
+    border-radius: var(--radius-sm);
+    color: var(--accent-amber);
+    background-color: rgba(245, 158, 11, 0.08);
+    letter-spacing: 0.04em;
   }
 
   .year-tag {

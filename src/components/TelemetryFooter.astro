@@ -1,4 +1,6 @@
 ---
+import { profile } from '../data/profile';
+
 interface Props {
   currentFocus?: string;
   emailAddress?: string;
@@ -6,7 +8,7 @@ interface Props {
 
 const {
   currentFocus = "Distributed data systems & LLM orchestration",
-  emailAddress,
+  emailAddress = profile.email,
 } = Astro.props;
 
 const currentYear = new Date().getFullYear();

@@ -19,6 +19,7 @@ export interface ProjectItem {
   year: string;
   summary: string;
   technicalContext?: string;
+  status?: 'completed' | 'in-progress' | 'planned';
   metrics: ProjectMetric[];
   technologies: string[];
   githubUrl?: string;

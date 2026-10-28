@@ -19,6 +19,7 @@ technologies:
   - "scikit-learn"
   - "UMAP"
   - "HDBSCAN"
+githubUrl: "https://github.com/DimasBaskara666/researchers_placement"
 architectureSteps:
   - step: 1
     label: "Publication Ingestion & Text Extraction"

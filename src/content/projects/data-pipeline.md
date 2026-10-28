@@ -1,15 +1,16 @@
 ---
 title: "Epidemiological Outbreak Data Pipeline"
 domain: "data"
-year: "2024 - 2025"
-summary: "Prototypical batch data pipeline designed to ingest public health surveillance records, enforce schema contracts via Pydantic, perform regional spatial joins, and store normalized analytical tables in DuckDB."
-technicalContext: "Data Pipeline Prototype / Academic Study"
+year: "Planned"
+status: "planned"
+summary: "Planned batch data pipeline architecture designed to ingest public health surveillance records, enforce schema contracts via Pydantic, perform regional spatial joins, and store normalized analytical tables in DuckDB."
+technicalContext: "Planned Architecture / Specification"
 metrics:
-  - label: "Storage Engine"
+  - label: "Target Storage"
     value: "DuckDB / Parquet"
-  - label: "Validation Layer"
+  - label: "Validation Contract"
     value: "Pydantic Schemas"
-  - label: "Execution Model"
+  - label: "Planned Runtime"
     value: "Python Batch Pipeline"
 technologies:
   - "Python"
@@ -37,4 +38,4 @@ architectureSteps:
 featured: true
 ---
 
-A pipeline prototype built to explore reproducible data ingestion for epidemiological datasets. Focuses on strong data validation contracts using Pydantic and analytical storage in DuckDB.
+A planned batch data pipeline architecture designed for reproducible ingestion of epidemiological datasets. Currently in architectural specification, focusing on data validation contracts using Pydantic and columnar analytical storage in DuckDB, scheduled for implementation following the portfolio refresh.
