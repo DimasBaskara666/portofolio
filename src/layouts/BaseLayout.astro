@@ -10,6 +10,8 @@ interface Props {
   canonicalUrl?: string;
   brandName?: string;
   statusText?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
   currentFocus?: string;
   pageType?: 'website' | 'article' | 'profile';
   ogImage?: string;
@@ -23,6 +25,8 @@ const {
   canonicalUrl,
   brandName = "sys.dev",
   statusText = "Available for roles",
+  githubUrl,
+  linkedinUrl,
   currentFocus = "Distributed data systems & LLM orchestration",
   pageType = "website",
   ogImage,
@@ -66,7 +70,12 @@ const {
       Skip to main content
     </a>
 
-    <SiteHeader brandName={brandName} statusText={statusText} />
+    <SiteHeader
+      brandName={brandName}
+      statusText={statusText}
+      githubUrl={githubUrl}
+      linkedinUrl={linkedinUrl}
+    />
 
     <main id="main-content" tabindex="-1">
       <slot />
