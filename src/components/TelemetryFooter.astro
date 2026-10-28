@@ -2,16 +2,15 @@
 interface Props {
   currentFocus?: string;
   emailAddress?: string;
-  gitCommitHash?: string;
 }
 
 const {
   currentFocus = "Distributed data systems & LLM orchestration",
-  emailAddress = "hello@example.com",
-  gitCommitHash = "rev.2026.10",
+  emailAddress,
 } = Astro.props;
 
 const currentYear = new Date().getFullYear();
+const showEmail = Boolean(emailAddress && !emailAddress.includes("example.com"));
 ---
 
 <footer class="telemetry-footer" id="contact">
@@ -33,37 +32,22 @@ const currentYear = new Date().getFullYear();
         </div>
       </div>
 
-      <div class="telemetry-block">
-        <span class="telemetry-label font-mono">System Colophon</span>
-        <div class="telemetry-value font-mono">
-          <span>Astro Static</span>
-          <span class="delimiter" aria-hidden="true">·</span>
-          <span>Zero-JS Core</span>
-          <span class="delimiter" aria-hidden="true">·</span>
-          <span class="text-muted">{gitCommitHash}</span>
+      {showEmail && (
+        <div class="telemetry-block">
+          <span class="telemetry-label font-mono">Direct Communication</span>
+          <div class="telemetry-value font-mono">
+            <a href={`mailto:${emailAddress}`} class="email-link" aria-label={`Send email to ${emailAddress}`}>
+              {emailAddress}
+            </a>
+          </div>
         </div>
-      </div>
-
-      <div class="telemetry-block">
-        <span class="telemetry-label font-mono">Direct Communication</span>
-        <div class="telemetry-value font-mono">
-          <a href={`mailto:${emailAddress}`} class="email-link" aria-label={`Send email to ${emailAddress}`}>
-            {emailAddress}
-          </a>
-        </div>
-      </div>
+      )}
     </div>
 
     <div class="footer-bottom">
       <p class="copyright text-muted font-mono">
         &copy; {currentYear} Systems Engineering Portfolio. All rights reserved.
       </p>
-      <div class="footer-indicators font-mono">
-        <span class="indicator-chip">
-          <span class="indicator-dot" aria-hidden="true"></span>
-          <span>HTTP 200 OK</span>
-        </span>
-      </div>
     </div>
   </div>
 </footer>
@@ -185,6 +169,12 @@ const currentYear = new Date().getFullYear();
     color: var(--text-primary);
   }
 
+  .email-link:focus-visible {
+    outline: 2px solid var(--text-accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
   .footer-bottom {
     display: flex;
     align-items: center;
@@ -197,26 +187,6 @@ const currentYear = new Date().getFullYear();
 
   .copyright {
     font-size: var(--text-xs);
-  }
-
-  .footer-indicators {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
-  .indicator-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-  }
-
-  .indicator-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: var(--accent-emerald);
+    margin: 0;
   }
 </style>

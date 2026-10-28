@@ -43,26 +43,11 @@ const sortedLogs = allLogs.sort((a, b) => {
             </h3>
           </header>
 
-          <p class="log-description text-secondary text-sm">
-            {log.data.description}
-          </p>
-
           <div class="log-tags" aria-label="Article tags">
-            {log.data.tags.map((tag) => (
+            {log.data.tags.slice(0, 3).map((tag) => (
               <span class="tag-chip font-mono text-xs">{tag}</span>
             ))}
           </div>
-
-          <footer class="log-card-footer">
-            <a
-              href={`/logs/${log.id}`}
-              class="read-more-link font-mono text-xs text-accent"
-              aria-label={`Read complete article: ${log.data.title}`}
-            >
-              <span>Read Full Article</span>
-              <span class="arrow-glyph" aria-hidden="true">→</span>
-            </a>
-          </footer>
         </article>
       ))}
     </div>
@@ -87,7 +72,7 @@ const sortedLogs = allLogs.sort((a, b) => {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    padding: var(--space-5);
+    padding: var(--space-6);
     transition: border-color var(--transition-fast), background-color var(--transition-fast);
   }
 
@@ -133,9 +118,10 @@ const sortedLogs = allLogs.sort((a, b) => {
     color: var(--text-accent);
   }
 
-  .log-description {
-    line-height: 1.55;
-    margin: 0;
+  .log-title-link:focus-visible {
+    outline: 2px solid var(--text-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
   }
 
   .log-tags {
@@ -152,26 +138,6 @@ const sortedLogs = allLogs.sort((a, b) => {
     border-radius: var(--radius-sm);
     color: var(--text-muted);
     font-size: 0.7rem;
-  }
-
-  .log-card-footer {
-    display: flex;
-    align-items: center;
-    padding-top: var(--space-2);
-    margin-top: auto;
-  }
-
-  .read-more-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    transition: color var(--transition-fast);
-  }
-
-  .read-more-link:hover {
-    color: var(--text-primary);
   }
 
   .logs-empty {
