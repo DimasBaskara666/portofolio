@@ -283,31 +283,48 @@ const hasSocialLinks = showGithub || showLinkedin;
     height: 1rem;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 640px) {
     .header-inner {
-      min-height: auto;
-      padding-top: var(--space-3);
-      padding-bottom: var(--space-3);
+      min-height: 3.5rem;
+      padding-top: var(--space-2);
+      padding-bottom: var(--space-2);
       gap: var(--space-2);
+      flex-wrap: nowrap;
     }
 
     .header-left {
-      width: 100%;
-      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .status-pill {
+      display: none;
+    }
+
+    .header-divider,
+    .social-links {
+      display: none;
     }
 
     .header-nav {
-      width: 100%;
-      justify-content: space-between;
-      border-top: 1px solid var(--border-subtle);
-      padding-top: var(--space-2);
-      flex-wrap: wrap;
-      gap: var(--space-2);
+      gap: 0;
     }
 
     .nav-links {
-      flex-wrap: wrap;
-      gap: var(--space-1);
+      gap: 0;
+    }
+
+    .nav-link {
+      padding: var(--space-1) 0.25rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  @media (min-width: 375px) and (max-width: 640px) {
+    .nav-link {
+      padding: var(--space-1) 0.45rem;
+      font-size: var(--text-xs);
+      letter-spacing: 0.05em;
     }
   }
 </style>
