@@ -2,15 +2,26 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
-import DomainFilter from '../components/DomainFilter.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import TechnicalMatrix from '../components/TechnicalMatrix.astro';
-import EngineeringLogs from '../components/EngineeringLogs.astro';
 import { profile } from '../data/profile';
 
 const allProjects = await getCollection('projects');
 
-const projects = allProjects.map((entry) => ({
+// Prioritize lead data engineering, thesis NLP research, desktop case study, then planned pipeline
+const projectOrder = [
+  'mecut-radar',
+  'topic-modeling-researcher-recommendation',
+  'research-collaboration-analyzer',
+  'data-pipeline',
+];
+
+const sortedProjects = [...allProjects].sort((a, b) => {
+  const indexA = projectOrder.indexOf(a.id);
+  const indexB = projectOrder.indexOf(b.id);
+  return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+});
+
+const projects = sortedProjects.map((entry) => ({
   id: entry.id,
   title: entry.data.title,
   domain: entry.data.domain,
@@ -28,60 +39,40 @@ const projects = allProjects.map((entry) => ({
 ---
 
 <BaseLayout
-  title="Systems Engineering Portfolio | Data, Software & AI"
-  description="Personal portfolio of an Informatics graduate specializing in Data Engineering, Software Engineering, and AI/ML/NLP systems."
-  brandName="dimas // sys"
+  title="Dimas | Data Engineer"
+  description="Personal portfolio of Dimas, an Informatics graduate specializing in Data Engineering, reproducible data processing pipelines, and applied analytics."
+  brandName="Dimas"
   statusText="Available for roles"
   githubUrl={profile.githubUrl}
   linkedinUrl={profile.linkedinUrl}
   emailAddress={profile.email}
-  currentFocus="Distributed data pipelines & LLM orchestration"
+  currentFocus="Reproducible data pipelines & automated batch processing"
   pageType="profile"
+  activeNav="work"
 >
   <div class="container page-content">
     <!-- Hero Section -->
     <Hero
       name={profile.name}
-      role={profile.role}
-      bio="Informatics graduate specializing in data pipelines, backend architecture, and applied machine learning. Focused on high-throughput processing, clean data contracts, and verified system reliability."
       cvUrl={profile.cvUrl}
     />
 
-    <!-- Work Section Target -->
+    <!-- Selected Projects Section -->
     <section id="work" class="section-block" aria-labelledby="work-heading">
       <div class="section-header">
-        <h2 id="work-heading" class="section-title font-mono">
-          <span class="section-index text-muted">01 //</span> Selected Systems & Architecture
+        <h2 id="work-heading" class="section-title font-serif">
+          Selected systems and architecture
         </h2>
+        <span class="section-count font-mono text-xs text-muted">
+          {projects.length} systems
+        </span>
       </div>
 
-      <DomainFilter activeDomain="all" />
-
-      <div class="projects-grid" id="projects-grid">
-        {projects.map((project) => (
-          <ProjectCard project={project} />
+      <div class="projects-list" id="projects-list">
+        {projects.map((project, idx) => (
+          <ProjectCard project={project} index={idx + 1} />
         ))}
       </div>
-    </section>
-
-    <!-- Competencies Section Target -->
-    <section id="competencies" class="section-block" aria-labelledby="competencies-heading">
-      <div class="section-header">
-        <h2 id="competencies-heading" class="section-title font-mono">
-          <span class="section-index text-muted">02 //</span> Technical Competency Matrix
-        </h2>
-      </div>
-      <TechnicalMatrix />
-    </section>
-
-    <!-- Logs Section Target -->
-    <section id="logs" class="section-block" aria-labelledby="logs-heading">
-      <div class="section-header">
-        <h2 id="logs-heading" class="section-title font-mono">
-          <span class="section-index text-muted">03 //</span> Engineering Logs & Case Studies
-        </h2>
-      </div>
-      <EngineeringLogs />
     </section>
   </div>
 </BaseLayout>
@@ -92,13 +83,13 @@ const projects = allProjects.map((entry) => ({
     padding-bottom: var(--space-16);
     display: flex;
     flex-direction: column;
-    gap: var(--space-12);
+    gap: var(--space-10);
   }
 
   @media (min-width: 640px) {
     .page-content {
       padding-top: var(--space-6);
-      gap: var(--space-16);
+      gap: var(--space-12);
     }
   }
 
@@ -108,36 +99,28 @@ const projects = allProjects.map((entry) => ({
 
   .section-header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
-    padding-bottom: var(--space-3);
+    padding-bottom: var(--space-4);
     border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: var(--space-6);
+    margin-bottom: 0;
   }
 
   .section-title {
-    font-size: var(--text-base);
+    font-size: var(--text-2xl);
     font-weight: 600;
     color: var(--text-primary);
-    text-transform: uppercase;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+
+  .section-count {
     letter-spacing: 0.04em;
-    line-height: 1.3;
   }
 
-  .section-index {
-    margin-right: var(--space-2);
-  }
-
-  .placeholder-card {
-    background: var(--bg-surface);
-    border: 1px dashed var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: var(--space-6);
-  }
-
-  .projects-grid {
+  .projects-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
   }
 </style>

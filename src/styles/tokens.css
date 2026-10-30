@@ -1,22 +1,29 @@
 :root {
-  /* Color palette */
-  --bg-canvas: #09090b;
-  --bg-surface: #121215;
-  --bg-surface-hover: #18181c;
-  --bg-subtle: #27272a;
+  color-scheme: dark;
 
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.20);
-  --border-accent: rgba(56, 189, 248, 0.55);
+  /* Color palette - Dark Theme (Default) */
+  --bg-canvas: #181716;
+  --bg-surface: #242321;
+  --bg-surface-hover: #2f2d2a;
+  --bg-subtle: #1e1d1b;
 
-  --text-primary: #f4f4f5;
-  --text-secondary: #a1a1aa;
-  --text-muted: #8a8a93;
-  --text-accent: #38bdf8;
-  --accent-amber: #f59e0b;
-  --accent-emerald: #10b981;
+  --border-subtle: rgba(232, 225, 215, 0.12);
+  --border-active: rgba(232, 225, 215, 0.28);
+  --border-accent: rgba(222, 115, 86, 0.65);
+
+  --text-primary: #f7f5f0;
+  --text-secondary: #a8a39d;
+  --text-muted: #8c8780;
+  --text-accent: #de7356;
+  --accent-terracotta: #de7356;
+  --accent-sand: #e8e1d7;
+  --accent-amber: #c27803;
+  --accent-emerald: #22c55e;
+
+  --header-bg: rgba(24, 23, 22, 0.88);
 
   /* Typography scale */
+  --font-serif: 'Fraunces', Georgia, serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, monospace;
 
@@ -27,6 +34,7 @@
   --text-xl: 1.25rem;     /* 20px */
   --text-2xl: 1.5rem;     /* 24px */
   --text-3xl: 2rem;       /* 32px */
+  --text-4xl: 2.5rem;     /* 40px */
 
   /* Spacing scale */
   --space-1: 0.25rem;     /* 4px */
@@ -40,8 +48,8 @@
   --space-12: 3rem;       /* 48px */
   --space-16: 4rem;       /* 64px */
 
-  /* Layout */
-  --max-width: 48rem;     /* 768px for readable editorial column */
+  /* Layout: 62.5rem (1000px) verified from wisl.dev reference */
+  --max-width: 62.5rem;
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -50,4 +58,29 @@
   /* Motion */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* Color palette - Light Theme */
+  --bg-canvas: #f7f5f0;
+  --bg-surface: #e8e1d7;
+  --bg-surface-hover: #dfd7cc;
+  --bg-subtle: #eae4da;
+
+  --border-subtle: rgba(36, 35, 33, 0.12);
+  --border-active: rgba(36, 35, 33, 0.28);
+  --border-accent: rgba(222, 115, 86, 0.65);
+
+  --text-primary: #242321;
+  --text-secondary: #5a5853;
+  --text-muted: #737069;
+  --text-accent: #de7356;
+  --accent-terracotta: #de7356;
+  --accent-sand: #e8e1d7;
+  --accent-amber: #c27803;
+  --accent-emerald: #15803d;
+
+  --header-bg: rgba(247, 245, 240, 0.88);
 }

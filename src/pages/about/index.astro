@@ -1,0 +1,886 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { profile } from '../../data/profile';
+import { competencies } from '../../data/competencies';
+
+interface LogoVariants {
+  darkTheme: string;
+  lightTheme: string;
+}
+
+interface ExperienceItem {
+  role: string;
+  organization: string;
+  logoSlug?: string;
+  logoUrl?: string | null;
+  dualLogo?: LogoVariants | null;
+  period: string;
+  arrangement: string;
+  location: string;
+  description: string;
+}
+
+function resolveLogos(slug?: string): { logoUrl: string | null; dualLogo: LogoVariants | null } {
+  if (!slug) return { logoUrl: null, dualLogo: null };
+  const publicDir = path.join(process.cwd(), 'public');
+
+  // Pair for dual website themes: itenas_light.webp for dark site, itenas_dark.webp for light site
+  const darkThemeRel = `/images/logos/${slug}_light.webp`;
+  const lightThemeRel = `/images/logos/${slug}_dark.webp`;
+
+  if (
+    fs.existsSync(path.join(publicDir, darkThemeRel)) &&
+    fs.existsSync(path.join(publicDir, lightThemeRel))
+  ) {
+    return {
+      logoUrl: null,
+      dualLogo: {
+        darkTheme: darkThemeRel,
+        lightTheme: lightThemeRel,
+      },
+    };
+  }
+
+  // Single asset fallback (.webp, .png, .svg)
+  const supportedExtensions = ['.webp', '.png', '.svg'];
+  for (const ext of supportedExtensions) {
+    const rel = `/images/logos/${slug}${ext}`;
+    if (fs.existsSync(path.join(publicDir, rel))) {
+      return { logoUrl: rel, dualLogo: null };
+    }
+  }
+
+  return { logoUrl: null, dualLogo: null };
+}
+
+const experiencesRaw = [
+  {
+    role: 'Laboratory Assistant - Multimedia',
+    organization: 'Institut Teknologi Nasional (ITENAS)',
+    logoSlug: 'itenas',
+    period: 'October 2025 - January 2026',
+    arrangement: 'Part-time, on-site',
+    location: 'Bandung',
+    description:
+      'Guided undergraduate students through multimedia laboratory practical sessions, coursework exercises, and technical assignments.',
+  },
+  {
+    role: 'Research & Development / IT Intern',
+    organization: 'BRIN RI (Pusat Riset Sains Data dan Informasi)',
+    logoSlug: 'brin',
+    period: 'March 2025 - July 2025',
+    arrangement: 'Internship, hybrid',
+    location: 'Bandung',
+    description:
+      'Worked on Python-based data processing and topic modeling using BERTopic for the Collab Identifier research-collaboration analysis prototype.',
+  },
+  {
+    role: 'Laboratory Assistant - Computer Networks',
+    organization: 'Institut Teknologi Nasional (ITENAS)',
+    logoSlug: 'itenas',
+    period: 'March 2025 - June 2025',
+    arrangement: 'Part-time, on-site',
+    location: 'Bandung',
+    description:
+      'Guided students during computer networks laboratory practical sessions and hands-on networking assignments.',
+  },
+  {
+    role: 'Web Developer Intern',
+    organization: 'Enclave',
+    logoSlug: 'enclave',
+    period: 'September 2024 - February 2025',
+    arrangement: 'Internship, hybrid',
+    location: 'Bandung',
+    description:
+      'Developed web applications using Laravel and SQLite.',
+  },
+];
+
+const experiences: ExperienceItem[] = experiencesRaw.map((item) => {
+  const logos = resolveLogos(item.logoSlug);
+  return {
+    ...item,
+    logoUrl: logos.logoUrl,
+    dualLogo: logos.dualLogo,
+  };
+});
+
+---
+
+<BaseLayout
+  title="About | Dimas"
+  description="Background, work experience, education, and technical competencies of Dimas, an Informatics graduate specializing in Data Engineering."
+  brandName="Dimas"
+  activeNav="about"
+>
+  <div class="container page-content">
+    <!-- Intro & Contact Grid -->
+    <section class="about-hero-grid" aria-labelledby="about-heading">
+      <div class="bio-column">
+        <span class="hero-eyebrow font-mono text-xs text-muted">Profile and background</span>
+        <h1 id="about-heading" class="about-heading font-serif">About</h1>
+
+        <div class="bio-text">
+          <p class="bio-lead text-primary">
+            I am an Informatics graduate from Institut Teknologi Nasional (ITENAS) Bandung, focused on data engineering, reproducible pipelines, and analytical data storage.
+          </p>
+          <p class="text-secondary">
+            My work centers on building dependable data pipelines using Python, SQL, DuckDB, and Polars. I focus on automated batch ingestion, schema validation, and defensive data transformation to produce clean, reproducible tables.
+          </p>
+          <p class="text-secondary">
+            During my research internship at BRIN RI and my undergraduate thesis, I worked with large publication datasets, text extraction, and topic modeling algorithms. That work shaped how I think about data systems: keep boundaries explicit, validate schemas at ingestion, and log transformations so every step is traceable.
+          </p>
+        </div>
+      </div>
+
+      <aside class="contact-column" aria-label="Contact and profile links">
+        <span class="contact-eyebrow font-mono text-xs text-muted">Connect and resources</span>
+
+        <div class="contact-actions">
+          <a
+            href={profile.linkedinUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="action-btn action-btn-primary"
+          >
+            <span>Connect on LinkedIn</span>
+            <span class="action-glyph" aria-hidden="true">↗</span>
+          </a>
+
+          <a
+            href={profile.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="action-btn action-btn-secondary"
+          >
+            <span>GitHub profile</span>
+            <span class="action-glyph" aria-hidden="true">↗</span>
+          </a>
+
+          <button
+            type="button"
+            class="action-btn action-btn-copy"
+            id="copy-email-btn"
+            data-email={profile.email}
+            aria-label={`Copy email address ${profile.email} to clipboard`}
+          >
+            <span class="copy-label">
+              <span class="copy-email font-mono">{profile.email}</span>
+            </span>
+            <span class="copy-pill font-mono text-xs" id="copy-status" aria-live="polite">Copy</span>
+          </button>
+
+          <a
+            href={profile.cvUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="action-btn action-btn-ghost"
+          >
+            <span>Curriculum vitae (PDF)</span>
+            <span class="action-glyph" aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Work Experience Section -->
+    <section class="about-section" aria-labelledby="experience-heading">
+      <div class="section-header">
+        <h2 id="experience-heading" class="section-title font-serif">Work experience</h2>
+        <span class="section-count font-mono text-xs text-muted">{experiences.length} positions</span>
+      </div>
+
+      <div class="experience-list">
+        {experiences.map((item) => (
+          <article class="experience-item">
+            <div class="experience-meta font-mono text-xs text-muted">
+              <span class="experience-period text-primary font-mono">{item.period}</span>
+              <span class="experience-detail">{item.arrangement}</span>
+              <span class="experience-location">{item.location}</span>
+            </div>
+
+            <div class="experience-content">
+              <div class="experience-heading-row">
+                {item.dualLogo ? (
+                  <div class="org-logo-frame" aria-hidden="true">
+                    <img
+                      src={item.dualLogo.darkTheme}
+                      alt=""
+                      width="32"
+                      height="32"
+                      class="org-logo logo-for-dark"
+                      loading="lazy"
+                    />
+                    <img
+                      src={item.dualLogo.lightTheme}
+                      alt=""
+                      width="32"
+                      height="32"
+                      class="org-logo logo-for-light"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : item.logoUrl ? (
+                  <div class="org-logo-frame" aria-hidden="true">
+                    <img
+                      src={item.logoUrl}
+                      alt=""
+                      width="32"
+                      height="32"
+                      class="org-logo"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : null}
+                <div class="experience-title-wrap">
+                  <h3 class="experience-role font-serif">
+                    {item.role}
+                  </h3>
+                  <p class="experience-org font-mono text-xs text-secondary">
+                    {item.organization}
+                  </p>
+                </div>
+              </div>
+
+              <p class="experience-description text-secondary text-sm">
+                {item.description}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Education and Research Section -->
+    <section class="about-section" aria-labelledby="education-heading">
+      <div class="section-header">
+        <h2 id="education-heading" class="section-title font-serif">Education and research</h2>
+      </div>
+
+      <div class="education-block">
+        <article class="education-item">
+          <div class="education-meta font-mono text-xs text-muted">
+            <span class="education-period text-primary font-mono">2022 - 2026</span>
+            <span class="education-location">Bandung, Indonesia</span>
+            <span class="education-gpa text-secondary font-mono">GPA: 3.66</span>
+          </div>
+
+          <div class="education-content">
+            <div class="education-title-wrap">
+              <h3 class="education-institution font-serif">
+                Institut Teknologi Nasional (ITENAS)
+              </h3>
+              <p class="education-degree font-mono text-xs text-secondary">
+                Sarjana Komputer (S.Kom.) in Informatics
+              </p>
+            </div>
+
+            <div class="thesis-block">
+              <span class="thesis-eyebrow font-mono text-xs text-muted">Undergraduate thesis research</span>
+              <h4 class="thesis-title font-serif">
+                Evaluasi Komparatif Metode Topic Modeling untuk Rekomendasi Peneliti ke Kelompok Riset
+              </h4>
+              <p class="thesis-description text-secondary text-sm">
+                Comparative evaluation of statistical and neural topic modeling methods for automated researcher-to-research-group recommendation.
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="about-section" aria-labelledby="skills-heading">
+      <div class="section-header">
+        <h2 id="skills-heading" class="section-title font-serif">Skills</h2>
+      </div>
+
+      <div class="skills-list">
+        {competencies.map((group) => (
+          <div class="skill-row" id={`group-${group.id}`}>
+            <div class="skill-meta">
+              <h3 class="skill-group-title font-serif">{group.title}</h3>
+              <p class="skill-group-desc text-secondary text-xs">{group.description}</p>
+            </div>
+
+            <div class="skill-chips-list" aria-label={`Skills in ${group.title}`}>
+              {group.skills.map((skill) => (
+                <span class="skill-pill font-mono text-xs">{skill.name}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  function setupCopyButton(): void {
+    const copyBtn = document.getElementById('copy-email-btn');
+    const copyStatus = document.getElementById('copy-status');
+    if (!copyBtn || !copyStatus) return;
+    if (copyBtn.dataset.bound === 'true') return;
+    copyBtn.dataset.bound = 'true';
+
+    const email = copyBtn.getAttribute('data-email') || '';
+    let resetTimer: number | undefined;
+
+    copyBtn.addEventListener('click', async () => {
+      let succeeded = false;
+
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(email);
+          succeeded = true;
+        } catch {
+          succeeded = false;
+        }
+      }
+
+      if (!succeeded) {
+        try {
+          const textArea = document.createElement('textarea');
+          textArea.value = email;
+          textArea.setAttribute('readonly', '');
+          textArea.style.position = 'fixed';
+          textArea.style.left = '-999999px';
+          textArea.style.top = '-999999px';
+          document.body.appendChild(textArea);
+          textArea.select();
+          const copyCommand = 'execCommand';
+          if (copyCommand in document) {
+            succeeded = Boolean(
+              (document as unknown as Record<string, (cmd: string) => boolean>)[copyCommand]('copy')
+            );
+          }
+          textArea.remove();
+        } catch {
+          succeeded = false;
+        }
+      }
+
+      if (succeeded) {
+        copyStatus.textContent = 'Copied!';
+        copyBtn.classList.add('is-copied');
+
+        if (resetTimer) window.clearTimeout(resetTimer);
+        resetTimer = window.setTimeout(() => {
+          copyStatus.textContent = 'Copy';
+          copyBtn.classList.remove('is-copied');
+        }, 2200);
+      } else {
+        copyStatus.textContent = 'Failed';
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupCopyButton);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupCopyButton);
+  } else {
+    setupCopyButton();
+  }
+</script>
+
+<style>
+  .page-content {
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-16);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  @media (min-width: 640px) {
+    .page-content {
+      padding-top: var(--space-6);
+      gap: var(--space-16);
+    }
+  }
+
+  /* Intro & Contact Grid */
+  .about-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    align-items: start;
+    padding-bottom: var(--space-10);
+    border-bottom: 1px solid var(--border-subtle);
+    min-width: 0;
+  }
+
+  @media (min-width: 768px) {
+    .about-hero-grid {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-10);
+    }
+  }
+
+  .bio-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .hero-eyebrow {
+    letter-spacing: 0.04em;
+  }
+
+  .about-heading {
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .about-heading {
+      font-size: 3rem;
+    }
+  }
+
+  .bio-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .bio-lead {
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .bio-text p {
+    font-size: var(--text-base);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* Contact Stack (Unboxed) */
+  .contact-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .contact-eyebrow {
+    letter-spacing: 0.04em;
+  }
+
+  .contact-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: 0.7rem 0.95rem;
+    font-size: var(--text-xs);
+    letter-spacing: 0.03em;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .action-btn:focus-visible {
+    outline: 2px solid var(--accent-terracotta);
+    outline-offset: 2px;
+  }
+
+  .action-btn-primary {
+    background-color: #b85338;
+    color: #ffffff;
+    border: 1px solid #b85338;
+    font-weight: 500;
+  }
+
+  .action-btn-primary:hover {
+    background-color: #a3472f;
+    border-color: #a3472f;
+  }
+
+  .action-btn-secondary {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    font-weight: 500;
+  }
+
+  .action-btn-secondary:hover {
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-active);
+  }
+
+  .action-btn-copy {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    width: 100%;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .action-btn-copy:hover {
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-active);
+  }
+
+  .action-btn-copy.is-copied {
+    border-color: var(--accent-terracotta);
+  }
+
+  .copy-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    margin-right: var(--space-2);
+  }
+
+  .copy-email {
+    font-size: var(--text-xs);
+    letter-spacing: 0.01em;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Fixed size status pill guarantees zero layout shift between states */
+  .copy-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.5rem;
+    height: 1.5rem;
+    padding: 0;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    text-align: center;
+    user-select: none;
+    transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .action-btn-copy.is-copied .copy-pill {
+    background-color: #b85338;
+    color: #ffffff;
+    border-color: #b85338;
+  }
+
+  .action-btn-ghost {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .action-btn-ghost:hover {
+    background-color: var(--bg-surface-hover);
+    color: var(--text-primary);
+    border-color: var(--border-active);
+  }
+
+  .action-glyph {
+    font-size: 0.85em;
+    opacity: 0.75;
+  }
+
+  /* Section Layouts */
+  .about-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-6);
+  }
+
+  .section-title {
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+
+  .section-count {
+    letter-spacing: 0.04em;
+  }
+
+  /* Experience List */
+  .experience-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .experience-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .experience-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  @media (min-width: 640px) {
+    .experience-item {
+      grid-template-columns: 210px 1fr;
+      gap: var(--space-6);
+    }
+  }
+
+  .experience-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    line-height: 1.4;
+  }
+
+  .experience-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .experience-heading-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .org-logo-frame {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    overflow: hidden;
+  }
+
+  .org-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Dual logo switching between dark and light website themes */
+  :global(:root) .logo-for-dark,
+  :global(:root[data-theme="dark"]) .logo-for-dark {
+    display: block;
+  }
+  :global(:root) .logo-for-light,
+  :global(:root[data-theme="dark"]) .logo-for-light {
+    display: none;
+  }
+
+  :global(:root[data-theme="light"]) .logo-for-dark {
+    display: none;
+  }
+  :global(:root[data-theme="light"]) .logo-for-light {
+    display: block;
+  }
+
+  .experience-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .experience-role {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .experience-org {
+    margin: 0;
+  }
+
+  .experience-description {
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Education & Thesis */
+  .education-block {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .education-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  @media (min-width: 640px) {
+    .education-item {
+      grid-template-columns: 210px 1fr;
+      gap: var(--space-6);
+    }
+  }
+
+  .education-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    line-height: 1.4;
+  }
+
+  .education-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .education-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .education-institution {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .education-degree {
+    margin: 0;
+  }
+
+  .thesis-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .thesis-eyebrow {
+    letter-spacing: 0.04em;
+  }
+
+  .thesis-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .thesis-description {
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Skills Section */
+  .skills-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .skill-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding-bottom: var(--space-6);
+    margin-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .skill-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  @media (min-width: 640px) {
+    .skill-row {
+      grid-template-columns: 210px 1fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+  }
+
+  .skill-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .skill-group-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .skill-group-desc {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .skill-chips-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .skill-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.55rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    line-height: 1.3;
+    font-size: var(--text-xs);
+    transition: border-color var(--transition-fast);
+  }
+
+  .skill-pill:hover {
+    border-color: var(--border-active);
+  }
+</style>

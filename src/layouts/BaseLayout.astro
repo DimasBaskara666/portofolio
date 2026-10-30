@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import SiteHeader from '../components/SiteHeader.astro';
 import TelemetryFooter from '../components/TelemetryFooter.astro';
 import SEO from '../components/SEO.astro';
@@ -19,35 +20,58 @@ interface Props {
   ogImage?: string;
   publishedTime?: string;
   tags?: string[];
+  activeNav?: 'work' | 'about';
 }
 
 const {
-  title = "Systems Engineering Portfolio | Data, Software & AI",
-  description = "Personal portfolio of an Informatics graduate specializing in Data Engineering, Software Engineering, and AI/ML/NLP systems.",
+  title = "Dimas | Data Engineer",
+  description = "Personal portfolio of Dimas, an Informatics graduate specializing in Data Engineering, reproducible data processing pipelines, and applied analytics.",
   canonicalUrl,
-  brandName = "sys.dev",
+  brandName = "Dimas",
   statusText = "Available for roles",
   githubUrl = profile.githubUrl,
   linkedinUrl = profile.linkedinUrl,
   emailAddress = profile.email,
-  currentFocus = "Distributed data systems & LLM orchestration",
+  currentFocus = "Reproducible data pipelines & automated batch processing",
   pageType = "website",
   ogImage,
   publishedTime,
   tags,
+  activeNav,
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#09090b" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#181716" />
+    <meta name="color-scheme" content="dark light" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline>
+      (function () {
+        function applyStoredTheme() {
+          try {
+            var stored = localStorage.getItem('theme');
+            var theme = (stored === 'light' || stored === 'dark') ? stored : 'dark';
+            document.documentElement.dataset.theme = theme;
+            var metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (metaTheme) {
+              metaTheme.setAttribute('content', theme === 'dark' ? '#181716' : '#f7f5f0');
+            }
+          } catch (e) {
+            document.documentElement.dataset.theme = 'dark';
+          }
+        }
+        applyStoredTheme();
+        document.addEventListener('astro:after-swap', applyStoredTheme);
+      })();
+    </script>
+    <ClientRouter fallback="animate" />
 
     <!-- SEO & Metadata -->
     <SEO
@@ -59,8 +83,6 @@ const {
       publishedTime={publishedTime}
       tags={tags}
     />
-
-
   </head>
   <body>
     <a href="#main-content" class="skip-link font-mono">
@@ -72,6 +94,7 @@ const {
       statusText={statusText}
       githubUrl={githubUrl}
       linkedinUrl={linkedinUrl}
+      activeNav={activeNav}
     />
 
     <main id="main-content" tabindex="-1">
@@ -86,5 +109,7 @@ const {
   #main-content {
     min-height: 70vh;
     outline: none;
+    width: 100%;
+    min-width: 0;
   }
 </style>

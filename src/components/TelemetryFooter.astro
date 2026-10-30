@@ -7,7 +7,7 @@ interface Props {
 }
 
 const {
-  currentFocus = "Distributed data systems & LLM orchestration",
+  currentFocus = "Reproducible data pipelines & automated batch processing",
   emailAddress = profile.email,
 } = Astro.props;
 
@@ -21,7 +21,7 @@ const showEmail = Boolean(emailAddress && !emailAddress.includes("example.com"))
       <div class="telemetry-block">
         <span class="telemetry-label font-mono">Location & Local Time</span>
         <div class="telemetry-value font-mono">
-          <span class="location-tag">Jakarta, ID</span>
+          <span class="location-tag">Bandung, ID</span>
           <span class="delimiter" aria-hidden="true">·</span>
           <time id="telemetry-clock" datetime="" class="clock-display">--:--:-- WIB</time>
         </div>
@@ -48,18 +48,19 @@ const showEmail = Boolean(emailAddress && !emailAddress.includes("example.com"))
 
     <div class="footer-bottom">
       <p class="copyright text-muted font-mono">
-        &copy; {currentYear} Systems Engineering Portfolio. All rights reserved.
+        &copy; {currentYear} Dimas. All rights reserved.
       </p>
     </div>
   </div>
 </footer>
 
 <script>
+  let clockInterval: number | undefined;
+
   function initClock(): void {
     const clockEl = document.getElementById('telemetry-clock');
     if (!clockEl) return;
-
-    const targetEl: HTMLElement = clockEl;
+    const el: HTMLElement = clockEl;
 
     const formatter = new Intl.DateTimeFormat('en-GB', {
       timeZone: 'Asia/Jakarta',
@@ -73,17 +74,19 @@ const showEmail = Boolean(emailAddress && !emailAddress.includes("example.com"))
       try {
         const now = new Date();
         const timeString = formatter.format(now);
-        targetEl.textContent = `${timeString} WIB`;
-        targetEl.setAttribute('datetime', now.toISOString());
+        el.textContent = `${timeString} WIB`;
+        el.setAttribute('datetime', now.toISOString());
       } catch {
-        targetEl.textContent = 'UTC+7';
+        el.textContent = 'UTC+7';
       }
     }
 
     updateTime();
-    setInterval(updateTime, 1000);
+    if (clockInterval) clearInterval(clockInterval);
+    clockInterval = window.setInterval(updateTime, 1000);
   }
 
+  document.addEventListener('astro:page-load', initClock);
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initClock);
   } else {
@@ -151,7 +154,8 @@ const showEmail = Boolean(emailAddress && !emailAddress.includes("example.com"))
   }
 
   .clock-display {
-    color: var(--text-accent);
+    color: var(--text-primary);
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
   }
 
@@ -161,18 +165,20 @@ const showEmail = Boolean(emailAddress && !emailAddress.includes("example.com"))
   }
 
   .email-link {
-    color: var(--text-accent);
+    color: var(--text-primary);
     text-decoration: underline;
+    text-decoration-color: var(--accent-terracotta);
     text-underline-offset: 3px;
-    transition: color var(--transition-fast);
+    transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
   }
 
   .email-link:hover {
-    color: var(--text-primary);
+    color: var(--accent-terracotta);
+    text-decoration-color: var(--accent-terracotta);
   }
 
   .email-link:focus-visible {
-    outline: 2px solid var(--text-accent);
+    outline: 2px solid var(--accent-terracotta);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }

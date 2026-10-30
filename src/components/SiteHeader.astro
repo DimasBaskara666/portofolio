@@ -6,13 +6,15 @@ interface Props {
   statusText?: string;
   githubUrl?: string;
   linkedinUrl?: string;
+  activeNav?: 'work' | 'about';
 }
 
 const {
-  brandName = "sys.dev",
+  brandName = "Dimas",
   statusText = "Available for roles",
   githubUrl = profile.githubUrl,
   linkedinUrl = profile.linkedinUrl,
+  activeNav,
 } = Astro.props;
 
 function isPlaceholderOrEmpty(url: string | undefined, platform: 'github' | 'linkedin'): boolean {
@@ -44,14 +46,18 @@ function isPlaceholderOrEmpty(url: string | undefined, platform: 'github' | 'lin
 const showGithub = Boolean(githubUrl && !isPlaceholderOrEmpty(githubUrl, 'github'));
 const showLinkedin = Boolean(linkedinUrl && !isPlaceholderOrEmpty(linkedinUrl, 'linkedin'));
 const hasSocialLinks = showGithub || showLinkedin;
+
+// Determine route-aware active states
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isAbout = activeNav === 'about' || currentPath === '/about' || currentPath.startsWith('/about/');
+const isWork = activeNav === 'work' || (!isAbout && (currentPath === '/' || currentPath.startsWith('/#')));
 ---
 
 <header class="site-header">
   <div class="container header-inner">
     <div class="header-left">
-      <a href="/" class="brand-link" aria-label="Home">
-        <span class="operator-glyph font-mono" aria-hidden="true">//</span>
-        <span class="brand-text font-mono">{brandName}</span>
+      <a href="/" class="brand-link" aria-label="Dimas - Home">
+        <span class="brand-text font-serif">{brandName}</span>
       </a>
 
       <div class="status-pill" role="status" aria-label={`Status: ${statusText}`}>
@@ -62,10 +68,24 @@ const hasSocialLinks = showGithub || showLinkedin;
 
     <nav class="header-nav" aria-label="Main Navigation">
       <ul class="nav-links">
-        <li><a href="/#work" class="nav-link font-mono">Work</a></li>
-        <li><a href="/#competencies" class="nav-link font-mono">Skills</a></li>
-        <li><a href="/#logs" class="nav-link font-mono">Logs</a></li>
-        <li><a href="/#contact" class="nav-link font-mono">Contact</a></li>
+        <li>
+          <a
+            href="/"
+            class:list={['nav-link', 'font-mono', { active: isWork }]}
+            aria-current={isWork ? 'page' : undefined}
+          >
+            Work
+          </a>
+        </li>
+        <li>
+          <a
+            href="/about/"
+            class:list={['nav-link', 'font-mono', { active: isAbout }]}
+            aria-current={isAbout ? 'page' : undefined}
+          >
+            About
+          </a>
+        </li>
       </ul>
 
       {hasSocialLinks && (
@@ -124,6 +144,42 @@ const hasSocialLinks = showGithub || showLinkedin;
           </div>
         </>
       )}
+
+      <div class="header-divider theme-divider" aria-hidden="true"></div>
+
+      <button
+        type="button"
+        id="theme-toggle"
+        class="theme-toggle"
+        aria-label="Switch to light theme"
+        title="Switch to light theme"
+      >
+        <svg
+          class="theme-icon icon-sun"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+        <svg
+          class="theme-icon icon-moon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
     </nav>
   </div>
 </header>
@@ -134,11 +190,11 @@ const hasSocialLinks = showGithub || showLinkedin;
     top: 0;
     z-index: 100;
     width: 100%;
-    background-color: rgba(9, 9, 11, 0.85);
+    background-color: var(--header-bg, rgba(24, 23, 22, 0.88));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-subtle);
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
   }
 
   .header-inner {
@@ -161,33 +217,32 @@ const hasSocialLinks = showGithub || showLinkedin;
   .brand-link {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
-    font-size: var(--text-sm);
-    font-weight: 500;
     color: var(--text-primary);
     transition: color var(--transition-fast);
   }
 
   .brand-link:hover {
-    color: var(--text-accent);
+    color: var(--accent-terracotta);
   }
 
   .brand-link:focus-visible {
-    outline: 2px solid var(--text-accent);
+    outline: 2px solid var(--accent-terracotta);
     outline-offset: 3px;
     border-radius: var(--radius-sm);
   }
 
-  .operator-glyph {
-    color: var(--text-accent);
+  .brand-text {
+    font-size: var(--text-xl);
     font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
   }
 
   .status-pill {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 0.2rem 0.55rem;
+    padding: 0.25rem 0.65rem;
     background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-full);
@@ -203,7 +258,6 @@ const hasSocialLinks = showGithub || showLinkedin;
     height: 6px;
     border-radius: 50%;
     background-color: var(--accent-emerald);
-    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
   }
 
   .status-label {
@@ -226,22 +280,28 @@ const hasSocialLinks = showGithub || showLinkedin;
 
   .nav-link {
     display: inline-block;
-    padding: var(--space-1) var(--space-2);
+    padding: 0.35rem 0.65rem;
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     border-radius: var(--radius-sm);
     transition: color var(--transition-fast), background-color var(--transition-fast);
   }
 
   .nav-link:hover {
     color: var(--text-primary);
-    background-color: var(--bg-surface-hover);
+    background-color: var(--bg-surface);
+  }
+
+  .nav-link.active {
+    color: var(--text-primary);
+    background-color: var(--bg-surface);
+    font-weight: 600;
   }
 
   .nav-link:focus-visible {
-    outline: 2px solid var(--text-accent);
+    outline: 2px solid var(--accent-terracotta);
     outline-offset: 2px;
   }
 
@@ -261,26 +321,75 @@ const hasSocialLinks = showGithub || showLinkedin;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.875rem;
-    height: 1.875rem;
+    width: 2rem;
+    height: 2rem;
     border-radius: var(--radius-sm);
-    color: var(--text-muted);
+    color: var(--text-secondary);
     transition: color var(--transition-fast), background-color var(--transition-fast);
   }
 
   .social-link:hover {
     color: var(--text-primary);
-    background-color: var(--bg-surface-hover);
+    background-color: var(--bg-surface);
   }
 
   .social-link:focus-visible {
-    outline: 2px solid var(--text-accent);
+    outline: 2px solid var(--accent-terracotta);
     outline-offset: 2px;
   }
 
   .social-icon {
-    width: 1rem;
-    height: 1rem;
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  /* Theme toggle button */
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .theme-toggle:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-surface);
+    border-color: var(--border-subtle);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--accent-terracotta);
+    outline-offset: 2px;
+  }
+
+  .theme-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  /* In dark mode (default), show sun to switch to light */
+  :global(:root) .icon-sun,
+  :global(:root[data-theme="dark"]) .icon-sun {
+    display: block;
+  }
+  :global(:root) .icon-moon,
+  :global(:root[data-theme="dark"]) .icon-moon {
+    display: none;
+  }
+
+  /* In light mode, show moon to switch to dark */
+  :global(:root[data-theme="light"]) .icon-sun {
+    display: none;
+  }
+  :global(:root[data-theme="light"]) .icon-moon {
+    display: block;
   }
 
   @media (max-width: 640px) {
@@ -306,25 +415,59 @@ const hasSocialLinks = showGithub || showLinkedin;
     }
 
     .header-nav {
-      gap: 0;
+      gap: var(--space-1);
     }
 
     .nav-links {
-      gap: 0;
+      gap: var(--space-1);
     }
 
     .nav-link {
-      padding: var(--space-1) 0.25rem;
-      font-size: 0.7rem;
-      letter-spacing: 0.04em;
-    }
-  }
-
-  @media (min-width: 375px) and (max-width: 640px) {
-    .nav-link {
-      padding: var(--space-1) 0.45rem;
+      padding: var(--space-1) var(--space-2);
       font-size: var(--text-xs);
       letter-spacing: 0.05em;
     }
   }
 </style>
+
+<script>
+  function setupThemeToggle(): void {
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (!toggleBtn) return;
+
+    function syncState(): void {
+      const current = document.documentElement.dataset.theme || 'dark';
+      const isDark = current === 'dark';
+      const label = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+      toggleBtn?.setAttribute('aria-label', label);
+      toggleBtn?.setAttribute('title', label);
+    }
+
+    syncState();
+
+    if (toggleBtn.dataset.bound === 'true') return;
+    toggleBtn.dataset.bound = 'true';
+
+    toggleBtn.addEventListener('click', () => {
+      const active = document.documentElement.dataset.theme || 'dark';
+      const next = active === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      syncState();
+
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) {
+        meta.setAttribute('content', next === 'dark' ? '#181716' : '#f7f5f0');
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupThemeToggle);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupThemeToggle);
+  } else {
+    setupThemeToggle();
+  }
+</script>

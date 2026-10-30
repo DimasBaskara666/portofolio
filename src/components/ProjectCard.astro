@@ -1,91 +1,74 @@
 ---
 import type { ProjectItem } from '../types';
-import ArchitectureDiagram from './ArchitectureDiagram.astro';
 
 interface Props {
   project: ProjectItem;
+  index: number;
 }
 
-const { project } = Astro.props;
+const { project, index } = Astro.props;
 
 const domainLabels: Record<string, string> = {
   data: 'Data Engineering',
   software: 'Software Engineering',
-  ai: 'AI / ML / NLP',
+  ai: 'Applied ML & Analytics',
 };
 
-const domainAccents: Record<string, string> = {
-  data: 'var(--text-accent)',
-  software: 'var(--accent-emerald)',
-  ai: 'var(--accent-amber)',
-};
-
-const accent = domainAccents[project.domain] || 'var(--text-accent)';
 const domainName = domainLabels[project.domain] || project.domain;
+
+function getMaturity(id: string, status?: string): { label: string; pillClass: string } {
+  if (id === 'topic-modeling-researcher-recommendation') {
+    return { label: 'Research thesis', pillClass: 'pill-thesis' };
+  }
+  if (id === 'research-collaboration-analyzer') {
+    return { label: 'Private case study', pillClass: 'pill-private' };
+  }
+  if (status === 'planned' || id === 'data-pipeline') {
+    return { label: 'Planned specification', pillClass: 'pill-planned' };
+  }
+  return { label: 'Completed project', pillClass: 'pill-completed' };
+}
+
+const maturity = getMaturity(project.id, project.status);
+const indexStr = String(index).padStart(2, '0');
+const hasYear = project.year && project.year !== 'Planned';
 ---
 
-<article class="project-card" data-domain={project.domain} aria-labelledby={`proj-title-${project.id}`}>
-  <header class="project-header">
-    <div class="project-meta">
-      <span class="domain-badge font-mono text-xs" style={`color: ${accent}; border-color: ${accent};`}>
-        {domainName}
-      </span>
-      {project.technicalContext && (
-        <span class="context-tag font-mono text-xs text-muted">
-          {project.technicalContext}
-        </span>
+<article class="project-row" data-domain={project.domain} aria-labelledby={`proj-title-${project.id}`}>
+  <div class="row-meta font-mono text-xs text-muted">
+    <div class="meta-top">
+      <span class="row-index text-primary font-mono">{indexStr}</span>
+      {hasYear && (
+        <>
+          <span class="meta-sep" aria-hidden="true">/</span>
+          <span class="row-year font-mono">{project.year}</span>
+        </>
       )}
-      {project.status === 'planned' && (
-        <span class="status-tag font-mono text-xs">
-          Planned
-        </span>
-      )}
-      <span class="year-tag font-mono text-xs text-muted">
-        {project.year}
-      </span>
     </div>
 
-    <h3 id={`proj-title-${project.id}`} class="project-title">
-      {project.title}
-    </h3>
-  </header>
+    <span class="row-domain text-secondary font-mono">{domainName}</span>
 
-  <p class="project-summary text-secondary text-sm">
-    {project.summary}
-  </p>
-
-  {project.metrics && project.metrics.length > 0 && (
-    <div class="metrics-grid" aria-label="System Metrics and Evaluation">
-      {project.metrics.map((metric) => (
-        <div class="metric-item">
-          <span class="metric-label font-mono text-xs text-muted">{metric.label}</span>
-          <span class="metric-value font-mono text-xs text-primary">{metric.value}</span>
-        </div>
-      ))}
-    </div>
-  )}
-
-  <div class="tech-stack" aria-label="Technologies Used">
-    {project.technologies.map((tech) => (
-      <span class="tech-chip font-mono text-xs">{tech}</span>
-    ))}
+    <span class:list={['maturity-pill', 'font-mono', maturity.pillClass]}>
+      {maturity.label}
+    </span>
   </div>
 
-  {project.architectureSteps && project.architectureSteps.length > 0 && (
-    <details class="topology-accordion">
-      <summary class="topology-toggle font-mono text-xs">
-        <span class="toggle-icon font-mono" aria-hidden="true"></span>
-        <span>View System Architecture & Data Flow</span>
-        <span class="sr-only"> for {project.title}</span>
-      </summary>
-      <div class="topology-body">
-        <ArchitectureDiagram steps={project.architectureSteps} projectName={project.title} />
-      </div>
-    </details>
-  )}
+  <div class="row-content">
+    <h3 id={`proj-title-${project.id}`} class="project-title font-serif">
+      {project.title}
+    </h3>
 
-  <footer class="project-footer">
-    <div class="project-links">
+    <p class="project-summary text-secondary text-sm">
+      {project.summary}
+    </p>
+
+    <div class="tech-stack" aria-label={`Technologies used in ${project.title}`}>
+      {project.technologies.map((tech) => (
+        <span class="tech-chip font-mono text-xs">{tech}</span>
+      ))}
+    </div>
+
+    <div class="row-links">
       {project.githubUrl ? (
         <a
           href={project.githubUrl}
@@ -97,13 +80,13 @@ const domainName = domainLabels[project.domain] || project.domain;
           <span>Repository</span>
           <span class="link-glyph" aria-hidden="true">↗</span>
         </a>
-      ) : project.status === 'planned' ? (
-        <span class="project-link-disabled font-mono text-xs text-muted">
-          Development Planned
+      ) : project.id === 'data-pipeline' ? (
+        <span class="project-note font-mono text-xs text-muted">
+          Architecture specification
         </span>
       ) : (
-        <span class="project-link-disabled font-mono text-xs text-muted">
-          Academic Research Work
+        <span class="project-note font-mono text-xs text-muted">
+          Case study (private code)
         </span>
       )}
 
@@ -120,71 +103,111 @@ const domainName = domainLabels[project.domain] || project.domain;
         </a>
       )}
     </div>
-  </footer>
+  </div>
 </article>
 
 <style>
-  .project-card {
+  .project-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    padding: var(--space-8) 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .project-row:first-child {
+    padding-top: var(--space-2);
+  }
+
+  .project-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  @media (min-width: 680px) {
+    .project-row {
+      grid-template-columns: 210px 1fr;
+      gap: var(--space-6);
+    }
+  }
+
+  .row-meta {
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: var(--space-6);
-    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+    align-items: flex-start;
+    gap: 0.35rem;
+    line-height: 1.4;
   }
 
-  .project-card:hover {
-    border-color: var(--border-active);
-  }
-
-  .project-header {
+  .meta-top {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+    align-items: baseline;
+    gap: 0.35rem;
+    font-size: var(--text-sm);
   }
 
-  .project-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2);
+  .row-index {
+    font-weight: 600;
   }
 
-  .domain-badge {
-    display: inline-block;
-    padding: 0.15rem 0.5rem;
-    border: 1px solid;
-    border-radius: var(--radius-sm);
-    background-color: rgba(255, 255, 255, 0.02);
-    letter-spacing: 0.04em;
+  .meta-sep {
+    opacity: 0.4;
   }
 
-  .context-tag {
+  .row-year {
+    color: var(--text-secondary);
+  }
+
+  .row-domain {
+    font-size: var(--text-xs);
     letter-spacing: 0.02em;
   }
 
-  .status-tag {
+  .maturity-pill {
     display: inline-block;
     padding: 0.15rem 0.5rem;
-    border: 1px dashed var(--accent-amber);
+    font-size: 0.7rem;
     border-radius: var(--radius-sm);
-    color: var(--accent-amber);
-    background-color: rgba(245, 158, 11, 0.08);
-    letter-spacing: 0.04em;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-surface);
+    color: var(--text-secondary);
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    margin-top: 0.25rem;
   }
 
-  .year-tag {
-    margin-left: auto;
+  .pill-completed {
+    border-color: var(--border-active);
+    color: var(--text-primary);
+  }
+
+  .pill-thesis {
+    border-color: var(--border-active);
+    color: var(--text-primary);
+  }
+
+  .pill-private {
+    color: var(--text-muted);
+  }
+
+  .pill-planned {
+    border-style: dashed;
+    color: var(--text-muted);
+  }
+
+  .row-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
   }
 
   .project-title {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     font-weight: 600;
     color: var(--text-primary);
     line-height: 1.3;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
     margin: 0;
   }
 
@@ -193,99 +216,28 @@ const domainName = domainLabels[project.domain] || project.domain;
     margin: 0;
   }
 
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: var(--space-2);
-    padding: var(--space-4);
-    background-color: var(--bg-canvas);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-  }
-
-  .metric-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-
-  .metric-label {
-    text-transform: uppercase;
-    font-size: var(--text-xs);
-    letter-spacing: 0.05em;
-  }
-
-  .metric-value {
-    font-weight: 500;
-    line-height: 1.3;
-  }
-
   .tech-stack {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
+    margin-top: 0.1rem;
   }
 
   .tech-chip {
     padding: 0.2rem 0.5rem;
-    background-color: var(--bg-surface-hover);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
+    font-size: 0.75rem;
+    line-height: 1.3;
   }
 
-  .topology-accordion {
-    border-top: 1px dashed var(--border-subtle);
-    padding-top: var(--space-3);
-  }
-
-  .topology-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--text-accent);
-    cursor: pointer;
-    user-select: none;
-    padding: var(--space-1) var(--space-2);
-    margin-left: calc(-1 * var(--space-2));
-    border-radius: var(--radius-sm);
-    transition: color var(--transition-fast);
-  }
-
-  .topology-toggle:hover {
-    color: var(--text-primary);
-  }
-
-  .topology-toggle:focus-visible {
-    outline: 2px solid var(--text-accent);
-    outline-offset: 2px;
-  }
-
-  .toggle-icon::before {
-    content: "[+]";
-  }
-
-  .topology-accordion[open] .toggle-icon::before {
-    content: "[-]";
-  }
-
-  .topology-body {
-    margin-top: var(--space-2);
-  }
-
-  .project-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--border-subtle);
-    margin-top: auto;
-  }
-
-  .project-links {
+  .row-links {
     display: flex;
     align-items: center;
     gap: var(--space-4);
+    margin-top: var(--space-2);
   }
 
   .project-link {
@@ -294,15 +246,26 @@ const domainName = domainLabels[project.domain] || project.domain;
     gap: 0.25rem;
     color: var(--text-primary);
     text-decoration: underline;
+    text-decoration-color: var(--accent-terracotta);
     text-underline-offset: 3px;
-    transition: color var(--transition-fast);
+    transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
   }
 
   .project-link:hover {
-    color: var(--text-accent);
+    color: var(--accent-terracotta);
+  }
+
+  .project-link:focus-visible {
+    outline: 2px solid var(--accent-terracotta);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
   }
 
   .link-glyph {
     text-decoration: none;
+  }
+
+  .project-note {
+    font-style: normal;
   }
 </style>
