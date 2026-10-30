@@ -144,6 +144,7 @@ const experiences: ExperienceItem[] = experiencesRaw.map((item) => {
             target="_blank"
             rel="noopener noreferrer"
             class="action-btn action-btn-primary"
+            aria-label="Connect on LinkedIn (opens in new tab)"
           >
             <span>Connect on LinkedIn</span>
             <span class="action-glyph" aria-hidden="true">↗</span>
@@ -154,6 +155,7 @@ const experiences: ExperienceItem[] = experiencesRaw.map((item) => {
             target="_blank"
             rel="noopener noreferrer"
             class="action-btn action-btn-secondary"
+            aria-label="GitHub profile (opens in new tab)"
           >
             <span>GitHub profile</span>
             <span class="action-glyph" aria-hidden="true">↗</span>
@@ -164,7 +166,7 @@ const experiences: ExperienceItem[] = experiencesRaw.map((item) => {
             class="action-btn action-btn-copy"
             id="copy-email-btn"
             data-email={profile.email}
-            aria-label={`Copy email address ${profile.email} to clipboard`}
+            aria-label={`${profile.email}: Copy to clipboard`}
           >
             <span class="copy-label">
               <span class="copy-email font-mono">{profile.email}</span>
@@ -177,6 +179,7 @@ const experiences: ExperienceItem[] = experiencesRaw.map((item) => {
             target="_blank"
             rel="noopener noreferrer"
             class="action-btn action-btn-ghost"
+            aria-label="Curriculum vitae (PDF, opens in new tab)"
           >
             <span>Curriculum vitae (PDF)</span>
             <span class="action-glyph" aria-hidden="true">↗</span>

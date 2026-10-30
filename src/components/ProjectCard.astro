@@ -75,7 +75,7 @@ const hasYear = project.year && project.year !== 'Planned';
           target="_blank"
           rel="noopener noreferrer"
           class="project-link font-mono text-xs"
-          aria-label={`View code repository for ${project.title}`}
+          aria-label={`Repository: View code for ${project.title} (opens in new tab)`}
         >
           <span>Repository</span>
           <span class="link-glyph" aria-hidden="true">↗</span>
@@ -96,7 +96,7 @@ const hasYear = project.year && project.year !== 'Planned';
           target="_blank"
           rel="noopener noreferrer"
           class="project-link font-mono text-xs"
-          aria-label={`View demonstration for ${project.title}`}
+          aria-label={`Demo: View demonstration for ${project.title} (opens in new tab)`}
         >
           <span>Demo</span>
           <span class="link-glyph" aria-hidden="true">↗</span>
@@ -187,12 +187,12 @@ const hasYear = project.year && project.year !== 'Planned';
   }
 
   .pill-private {
-    color: var(--text-muted);
+    color: var(--text-secondary);
   }
 
   .pill-planned {
     border-style: dashed;
-    color: var(--text-muted);
+    color: var(--text-secondary);
   }
 
   .row-content {
