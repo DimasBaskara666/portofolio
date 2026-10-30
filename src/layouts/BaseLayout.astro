@@ -11,7 +11,6 @@ interface Props {
   description?: string;
   canonicalUrl?: string;
   brandName?: string;
-  statusText?: string;
   githubUrl?: string;
   linkedinUrl?: string;
   emailAddress?: string;
@@ -28,7 +27,6 @@ const {
   description = "Personal portfolio of Dimas, an Informatics graduate specializing in Data Engineering, reproducible data processing pipelines, and applied analytics.",
   canonicalUrl,
   brandName = "Dimas",
-  statusText = "Available for roles",
   githubUrl = profile.githubUrl,
   linkedinUrl = profile.linkedinUrl,
   emailAddress = profile.email,
@@ -50,6 +48,7 @@ const {
     <meta name="color-scheme" content="dark light" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <script is:inline>
@@ -91,7 +90,6 @@ const {
 
     <SiteHeader
       brandName={brandName}
-      statusText={statusText}
       githubUrl={githubUrl}
       linkedinUrl={linkedinUrl}
       activeNav={activeNav}

@@ -3,7 +3,6 @@ import { profile } from '../data/profile';
 
 interface Props {
   brandName?: string;
-  statusText?: string;
   githubUrl?: string;
   linkedinUrl?: string;
   activeNav?: 'work' | 'about';
@@ -11,7 +10,6 @@ interface Props {
 
 const {
   brandName = "Dimas",
-  statusText = "Available for roles",
   githubUrl = profile.githubUrl,
   linkedinUrl = profile.linkedinUrl,
   activeNav,
@@ -57,13 +55,28 @@ const isWork = activeNav === 'work' || (!isAbout && (currentPath === '/' || curr
   <div class="container header-inner">
     <div class="header-left">
       <a href="/" class="brand-link" aria-label="Dimas - Home">
+        <span class="brand-logo-frame" aria-hidden="true">
+          <img
+            src="/images/logo-light.svg"
+            alt=""
+            width="24"
+            height="24"
+            class="brand-logo logo-for-dark"
+            loading="eager"
+            decoding="async"
+          />
+          <img
+            src="/images/logo-dark.svg"
+            alt=""
+            width="24"
+            height="24"
+            class="brand-logo logo-for-light"
+            loading="eager"
+            decoding="async"
+          />
+        </span>
         <span class="brand-text font-serif">{brandName}</span>
       </a>
-
-      <div class="status-pill" role="status" aria-label={`Status: ${statusText}`}>
-        <span class="status-dot" aria-hidden="true"></span>
-        <span class="status-label font-mono">{statusText}</span>
-      </div>
     </div>
 
     <nav class="header-nav" aria-label="Main Navigation">
@@ -217,6 +230,7 @@ const isWork = activeNav === 'work' || (!isAbout && (currentPath === '/' || curr
   .brand-link {
     display: inline-flex;
     align-items: center;
+    gap: 0.65rem;
     color: var(--text-primary);
     transition: color var(--transition-fast);
   }
@@ -231,39 +245,43 @@ const isWork = activeNav === 'work' || (!isAbout && (currentPath === '/' || curr
     border-radius: var(--radius-sm);
   }
 
+  .brand-logo-frame {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .brand-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    display: block;
+  }
+
+  :global(:root) .brand-logo.logo-for-dark,
+  :global(:root[data-theme="dark"]) .brand-logo.logo-for-dark {
+    display: block;
+  }
+  :global(:root) .brand-logo.logo-for-light,
+  :global(:root[data-theme="dark"]) .brand-logo.logo-for-light {
+    display: none;
+  }
+
+  :global(:root[data-theme="light"]) .brand-logo.logo-for-dark {
+    display: none;
+  }
+  :global(:root[data-theme="light"]) .brand-logo.logo-for-light {
+    display: block;
+  }
+
   .brand-text {
     font-size: var(--text-xl);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1;
-  }
-
-  .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: 0.25rem 0.65rem;
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-full);
-    transition: border-color var(--transition-fast);
-  }
-
-  .status-pill:hover {
-    border-color: var(--border-active);
-  }
-
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: var(--accent-emerald);
-  }
-
-  .status-label {
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-    letter-spacing: 0.02em;
   }
 
   .header-nav {
@@ -403,10 +421,6 @@ const isWork = activeNav === 'work' || (!isAbout && (currentPath === '/' || curr
 
     .header-left {
       flex-shrink: 0;
-    }
-
-    .status-pill {
-      display: none;
     }
 
     .header-divider,

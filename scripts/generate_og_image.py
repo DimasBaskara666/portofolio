@@ -22,11 +22,6 @@ def generate_og():
     draw.rounded_rectangle([(40, 40), (width - 40, height - 40)], radius=16, outline='#27272a', width=2)
 
     # Header bar inside box
-    # Status pill
-    draw.rounded_rectangle([(70, 70), (280, 106)], radius=18, fill='#18181b', outline='#27272a', width=1)
-    draw.ellipse([(85, 84), (95, 94)], fill='#10b981')
-    draw.text((105, 79), "AVAILABLE FOR ROLES", font=font_mono_small, fill="#a1a1aa")
-
     # Operator mark
     draw.text((width - 240, 78), "// dimas.sys", font=font_mono_med, fill="#38bdf8")
 
