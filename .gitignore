@@ -39,6 +39,9 @@ scripts/full_audit.py
 scripts/run_audit_captures.py
 scripts/test_transitions_and_capture.py
 
+# local docs & archives
+docs/
+
 # AI agents & local skills
 .agents/
 skills-lock.json
