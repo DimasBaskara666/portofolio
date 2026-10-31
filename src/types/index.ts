@@ -40,20 +40,3 @@ export interface CompetencyGroup {
   description: string;
   skills: SkillItem[];
 }
-
-export interface EngineeringLog {
-  id: string;
-  title: string;
-  description: string;
-  publishDate: string;
-  category: string;
-  tags: string[];
-  readTime?: string;
-}
-
-export interface SystemTelemetry {
-  status: string;
-  currentFocus: string;
-  location: string;
-  timezone: string;
-}
